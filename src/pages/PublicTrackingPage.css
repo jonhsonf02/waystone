@@ -1,0 +1,292 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ---------------------------------------------------------------
+   Design tokens — shared across PublicTrackingPage + RouteMap.
+   Prefixed --ws- to match the tokens already referenced inline
+   in RouteMap.jsx (var(--ws-slate-200), var(--ws-blue-600)).
+   ----------------------------------------------------------------*/
+:root {
+  --ws-ink: #12181f;
+  --ws-ink-soft: #3d4552;
+  --ws-paper: #eef1f5;
+  --ws-card: #ffffff;
+
+  --ws-slate-50: #f6f8fa;
+  --ws-slate-100: #eceff3;
+  --ws-slate-200: #dbe1e8;
+  --ws-slate-300: #c2cad4;
+  --ws-slate-400: #98a3b1;
+  --ws-slate-600: #5c6675;
+
+  --ws-blue-50: #ecf1ff;
+  --ws-blue-600: #2a55e0;
+  --ws-blue-700: #1f3fb0;
+
+  --ws-amber-500: #e2861f;
+
+  --ws-green-100: #dcf3e6;
+  --ws-green-600: #1f8f52;
+
+  --ws-red-100: #fbdedb;
+  --ws-red-500: #d1483f;
+
+  --ws-font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --ws-font-body: 'Inter', 'Segoe UI', sans-serif;
+
+  --ws-radius-card: 14px;
+  --ws-radius-chip: 999px;
+  --ws-shadow-card: 0 24px 60px -24px rgba(20, 40, 80, 0.28), 0 2px 6px rgba(20, 40, 80, 0.06);
+}
+
+* { box-sizing: border-box; }
+
+.tracking-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 64px 20px;
+  font-family: var(--ws-font-body);
+  color: var(--ws-ink);
+  background-color: var(--ws-paper);
+  background-image: radial-gradient(circle at 1px 1px, rgba(42, 85, 224, 0.08) 1px, transparent 0);
+  background-size: 26px 26px;
+}
+
+.tracking-page-state {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  font-size: 15px;
+  color: var(--ws-slate-600);
+}
+
+.tracking-page-state--error {
+  color: var(--ws-red-500);
+  font-weight: 500;
+}
+
+.tracking-page-card {
+  width: 100%;
+  max-width: 640px;
+  background: var(--ws-card);
+  border: 1px solid var(--ws-slate-200);
+  border-radius: var(--ws-radius-card);
+  box-shadow: var(--ws-shadow-card);
+  padding: 40px 40px 44px;
+  position: relative;
+}
+
+.tracking-page-card--pulse {
+  animation: trackingCardPulse 2s ease;
+}
+
+@keyframes trackingCardPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(42, 85, 224, 0.45), var(--ws-shadow-card); }
+  25%  { box-shadow: 0 0 0 5px rgba(42, 85, 224, 0.16), var(--ws-shadow-card); }
+  100% { box-shadow: 0 0 0 0 rgba(42, 85, 224, 0), var(--ws-shadow-card); }
+}
+
+/* Header */
+.tracking-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 26px;
+  margin-bottom: 22px;
+  border-bottom: 1px solid var(--ws-slate-100);
+}
+
+.tracking-page-eyebrow {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ws-slate-600);
+}
+
+.tracking-page-number {
+  margin: 0;
+  font-family: var(--ws-font-display);
+  font-weight: 700;
+  font-size: clamp(26px, 4.4vw, 34px);
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ws-ink);
+}
+
+.tracking-page-order-date {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--ws-slate-400);
+}
+
+/* Live update note */
+.tracking-page-live-note {
+  display: inline-flex;
+  align-items: center;
+  margin: -6px 0 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ws-amber-500);
+  animation: liveNoteFade 2s ease forwards;
+}
+
+@keyframes liveNoteFade {
+  0%   { opacity: 0; transform: translateY(-4px); }
+  15%  { opacity: 1; transform: translateY(0); }
+  82%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.tracking-page-eta {
+  margin: 0 0 22px;
+  font-size: 14px;
+  color: var(--ws-slate-600);
+}
+
+.tracking-page-eta strong {
+  color: var(--ws-ink);
+  font-weight: 600;
+}
+
+/* Current location */
+.tracking-page-current-location {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 26px 0;
+  padding: 14px 18px;
+  background: var(--ws-blue-50);
+  border-radius: 10px;
+}
+
+.tracking-page-current-location-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ws-slate-600);
+}
+
+.tracking-page-current-location-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ws-blue-700);
+  text-align: right;
+}
+
+/* Planned route chips */
+.tracking-page-route {
+  margin: 26px 0;
+}
+
+.tracking-page-summary-label {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ws-slate-600);
+}
+
+.tracking-page-route-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.tracking-page-route-chip {
+  position: relative;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ws-slate-600);
+  background: var(--ws-slate-50);
+  border: 1px solid var(--ws-slate-200);
+  border-radius: var(--ws-radius-chip);
+  padding: 6px 14px;
+}
+
+.tracking-page-route-chip:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  width: 6px;
+  height: 1px;
+  background: var(--ws-slate-300);
+  transform: translateY(-50%);
+}
+
+.tracking-page-route-chip--origin {
+  color: #fff;
+  background: var(--ws-ink);
+  border-color: var(--ws-ink);
+}
+
+.tracking-page-route-chip--dest {
+  color: #fff;
+  background: var(--ws-green-600);
+  border-color: var(--ws-green-600);
+}
+
+/* From / To / Recipient summary */
+.tracking-page-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 30px 0;
+  padding: 22px 0;
+  border-top: 1px solid var(--ws-slate-100);
+  border-bottom: 1px solid var(--ws-slate-100);
+}
+
+.tracking-page-summary p {
+  margin: 0;
+}
+
+.tracking-page-summary p:last-child {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ws-ink);
+}
+
+/* Contents */
+.tracking-page-contents {
+  margin: 22px 0;
+}
+
+.tracking-page-contents-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ws-slate-600);
+}
+
+/* Timeline heading */
+.tracking-page-timeline-title {
+  margin: 30px 0 16px;
+  font-family: var(--ws-font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ws-ink);
+}
+
+@media (max-width: 640px) {
+  .tracking-page { padding: 32px 12px; }
+  .tracking-page-card { padding: 28px 20px 32px; border-radius: 12px; }
+  .tracking-page-header { flex-direction: column; align-items: flex-start; }
+  .tracking-page-current-location { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .tracking-page-current-location-value { text-align: left; }
+  .tracking-page-summary { grid-template-columns: 1fr; gap: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tracking-page-card--pulse,
+  .tracking-page-live-note {
+    animation: none;
+  }
+}

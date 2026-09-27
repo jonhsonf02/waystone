@@ -1,0 +1,261 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --ws-ink: #12181f;
+  --ws-ink-soft: #3d4552;
+  --ws-paper: #f3f5f8;
+  --ws-card: #ffffff;
+
+  --ws-slate-50: #f6f8fa;
+  --ws-slate-100: #eceff3;
+  --ws-slate-200: #dbe1e8;
+  --ws-slate-300: #c2cad4;
+  --ws-slate-400: #98a3b1;
+  --ws-slate-600: #5c6675;
+
+  --ws-blue-50: #ecf1ff;
+  --ws-blue-600: #2a55e0;
+  --ws-blue-700: #1f3fb0;
+
+  --ws-red-100: #fbdedb;
+  --ws-red-600: #b13a32;
+
+  --ws-font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --ws-font-body: 'Inter', 'Segoe UI', sans-serif;
+
+  --ws-radius-card: 12px;
+  --ws-radius-input: 8px;
+  --ws-shadow-card: 0 1px 2px rgba(18, 24, 31, 0.04), 0 8px 24px -12px rgba(18, 24, 31, 0.1);
+}
+
+* { box-sizing: border-box; }
+
+.new-shipment-header {
+  margin-bottom: 24px;
+  font-family: var(--ws-font-body);
+}
+
+.new-shipment-title {
+  margin: 0 0 6px;
+  font-family: var(--ws-font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ws-ink);
+}
+
+.new-shipment-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ws-slate-600);
+}
+
+.new-shipment-error {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  font-family: var(--ws-font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ws-red-600);
+  background: var(--ws-red-100);
+  border-radius: var(--ws-radius-input);
+}
+
+.new-shipment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: var(--ws-font-body);
+}
+
+.form-section {
+  padding: 24px;
+  background: var(--ws-card);
+  border: 1px solid var(--ws-slate-100);
+  border-radius: var(--ws-radius-card);
+  box-shadow: var(--ws-shadow-card);
+  transition: border-color 0.2s ease;
+}
+
+.form-section:focus-within {
+  border-color: var(--ws-blue-600);
+}
+
+.form-section-title {
+  margin: 0 0 18px;
+  padding-left: 14px;
+  position: relative;
+  font-family: var(--ws-font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ws-ink);
+}
+
+.form-section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--ws-blue-600);
+}
+
+.form-section-hint {
+  margin: -8px 0 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ws-slate-600);
+}
+
+.form-grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-grid:last-child { margin-bottom: 0; }
+
+.form-grid--2 { grid-template-columns: repeat(2, 1fr); }
+.form-grid--4 { grid-template-columns: repeat(4, 1fr); }
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ws-slate-600);
+}
+
+.form-input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  font-family: var(--ws-font-body);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ws-ink);
+  background: var(--ws-slate-50);
+  border: 1px solid var(--ws-slate-200);
+  border-radius: var(--ws-radius-input);
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-input:hover {
+  border-color: var(--ws-slate-300);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--ws-blue-600);
+  background: #fff;
+  box-shadow: 0 0 0 3px var(--ws-blue-50);
+}
+
+select.form-input {
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------
+   Waypoints
+   ----------------------------------------------------------------*/
+.waypoint-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 100px 36px;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.waypoint-row .form-input {
+  margin-top: 0;
+}
+
+.waypoint-remove {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  font-size: 13px;
+  color: var(--ws-slate-400);
+  background: var(--ws-slate-50);
+  border: 1px solid var(--ws-slate-200);
+  border-radius: var(--ws-radius-input);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.waypoint-remove:hover {
+  color: var(--ws-red-600);
+  border-color: var(--ws-red-100);
+  background: var(--ws-red-100);
+}
+
+.waypoint-add {
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ws-blue-700);
+  background: var(--ws-blue-50);
+  border: 1px dashed #b7c8ff;
+  border-radius: var(--ws-radius-input);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.waypoint-add:hover {
+  background: #e0e9ff;
+  border-color: var(--ws-blue-600);
+}
+
+/* ---------------------------------------------------------------
+   Submit
+   ----------------------------------------------------------------*/
+.new-shipment-submit {
+  align-self: flex-end;
+  padding: 13px 28px;
+  font-family: var(--ws-font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--ws-blue-600);
+  border: none;
+  border-radius: var(--ws-radius-input);
+  cursor: pointer;
+  box-shadow: 0 10px 24px -10px rgba(42, 85, 224, 0.55);
+  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.new-shipment-submit:hover:not(:disabled) {
+  background: var(--ws-blue-700);
+  box-shadow: 0 12px 28px -8px rgba(42, 85, 224, 0.6);
+}
+
+.new-shipment-submit:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.new-shipment-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (max-width: 720px) {
+  .form-grid--2,
+  .form-grid--4 {
+    grid-template-columns: 1fr;
+  }
+  .waypoint-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .waypoint-remove {
+    grid-column: span 2;
+    justify-self: end;
+  }
+  .new-shipment-submit {
+    align-self: stretch;
+    text-align: center;
+  }
+}

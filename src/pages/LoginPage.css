@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+
+.login-page {
+  --ws-white: #ffffff;
+  --ws-slate-50: #f6f7f9;
+  --ws-slate-200: #dde1e8;
+  --ws-slate-300: #c3c9d4;
+  --ws-slate-500: #6a7383;
+  --ws-slate-600: #4a5262;
+  --ws-navy-900: #0e1b33;
+  --ws-blue-600: #2f6fe4;
+  --ws-red-600: #c0402b;
+  --ws-red-100: #fbe8e5;
+
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--ws-navy-900) 0%, var(--ws-navy-900) 240px, var(--ws-slate-50) 240px);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  padding: 1.5rem;
+}
+
+.login-page * {
+  box-sizing: border-box;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 23rem;
+  background: var(--ws-white);
+  border: 1px solid var(--ws-slate-200);
+  border-radius: 14px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 24px 48px rgba(14, 27, 51, 0.16);
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 2rem;
+}
+
+.login-brand-mark {
+  width: 2.1rem;
+  height: 2.1rem;
+  display: grid;
+  place-items: center;
+  background: var(--ws-navy-900);
+  color: var(--ws-white);
+  border-radius: 6px;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.login-brand-name {
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ws-navy-900);
+}
+
+.login-title {
+  margin: 0;
+  font-family: 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  color: var(--ws-navy-900);
+}
+
+.login-subtitle {
+  margin: 0.35rem 0 1.5rem;
+  font-size: 0.88rem;
+  color: var(--ws-slate-500);
+}
+
+.login-error {
+  margin: 0 0 1.1rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--ws-red-100);
+  color: var(--ws-red-600);
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+
+.login-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ws-slate-600);
+  margin-bottom: 1.1rem;
+}
+
+.login-input {
+  display: block;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.7rem 0.85rem;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: var(--ws-navy-900);
+  background: var(--ws-white);
+  border: 1px solid var(--ws-slate-300);
+  border-radius: 8px;
+}
+
+.login-input:focus-visible {
+  outline: 2px solid var(--ws-blue-600);
+  outline-offset: 1px;
+  border-color: var(--ws-blue-600);
+}
+
+.login-button {
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--ws-navy-900);
+  color: var(--ws-white);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.login-button:hover:not(:disabled) {
+  background: var(--ws-blue-600);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-button {
+    transition: none;
+  }
+}
+
+img.login-brand-mark {
+  object-fit: contain;
+  padding: 4px;
+  background: var(--ws-white);
+}

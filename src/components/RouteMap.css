@@ -1,0 +1,132 @@
+/* Relies on the --ws- tokens defined in PublicTrackingPage.css,
+   which is always loaded alongside this component. */
+
+.route-map {
+  margin: 6px 0 30px;
+  padding: 22px 20px 14px;
+  background: linear-gradient(180deg, var(--ws-slate-50), rgba(246, 248, 250, 0));
+  border: 1px solid var(--ws-slate-100);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.route-map-label {
+  margin: 0 0 18px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ws-slate-600);
+}
+
+/* Fixed pixel size so the SVG curve and the CSS motion path
+   (offset-path) stay in perfect register — the truck rides
+   exactly on the drawn line, on every screen. Smaller screens
+   scroll horizontally instead of rescaling the path. */
+.route-map-track {
+  position: relative;
+  width: 600px;
+  height: 158px;
+}
+
+.route-map-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 600px;
+  height: 120px;
+  display: block;
+  overflow: visible;
+}
+
+.route-map-vehicle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  offset-path: path("M40 90 Q 200 20 300 60 T 560 30");
+  offset-rotate: 0deg;
+  offset-distance: 0%;
+  transition: offset-distance 1.2s ease;
+  z-index: 2;
+}
+
+.route-map-vehicle-icon {
+  display: inline-block;
+  font-size: 22px;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 5px 8px rgba(20, 40, 80, 0.35));
+  animation: routeVehicleBob 1.6s ease-in-out infinite;
+}
+
+@keyframes routeVehicleBob {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-3deg); }
+  50%      { transform: translate(-50%, -55%) rotate(3deg); }
+}
+
+.route-map-stops {
+  position: absolute;
+  top: 128px;
+  left: 0;
+  width: 600px;
+  height: 30px;
+}
+
+.route-map-stop {
+  position: absolute;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.route-map-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ws-slate-300);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--ws-slate-300);
+}
+
+.route-map-dot--origin {
+  background: var(--ws-ink);
+  box-shadow: 0 0 0 1px var(--ws-ink);
+}
+
+.route-map-dot--dest {
+  background: var(--ws-green-600);
+  box-shadow: 0 0 0 1px var(--ws-green-600);
+}
+
+.route-map-stop-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ws-slate-600);
+}
+
+.route-map-percent {
+  margin: 10px 0 0;
+  font-family: var(--ws-font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ws-blue-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.route-map-exception {
+  display: inline-block;
+  margin: 10px 0 0;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ws-red-500);
+  background: var(--ws-red-100);
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-map-vehicle { transition: none; }
+  .route-map-vehicle-icon { animation: none; }
+}

@@ -1,0 +1,101 @@
+/* Relies on the --ws- tokens defined in PublicTrackingPage.css,
+   which is always loaded alongside this component. */
+
+.timeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 5px;
+  width: 1px;
+  background: var(--ws-slate-200);
+}
+
+.timeline-item {
+  position: relative;
+  padding: 0 0 22px 28px;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--ws-slate-300);
+}
+
+.timeline-item:first-child::before {
+  background: var(--ws-blue-600);
+  border-color: var(--ws-blue-600);
+  box-shadow: 0 0 0 4px var(--ws-blue-50);
+}
+
+.timeline-item-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.timeline-item-source {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ws-slate-400);
+}
+
+.timeline-item-edit {
+  margin-left: auto;
+  padding: 4px 9px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--ws-blue-600);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.timeline-item-edit:hover {
+  background: var(--ws-blue-50);
+}
+
+.timeline-item-edit:focus-visible {
+  outline: 2px solid var(--ws-blue-600);
+  outline-offset: 2px;
+}
+
+.timeline-item-description {
+  margin: 0 0 6px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ws-ink);
+}
+
+.timeline-item-meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--ws-slate-400);
+}
+
+@media (max-width: 640px) {
+  .timeline-item {
+    padding-left: 22px;
+  }
+}
