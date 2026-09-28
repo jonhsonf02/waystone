@@ -82,6 +82,7 @@
 
 .dashboard-stat-card {
   position: relative;
+  min-width: 0;
   padding: 20px 22px;
   background: var(--ws-card);
   border: 1px solid var(--ws-slate-100);
@@ -206,10 +207,87 @@
   .dashboard-stats { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ---------------------------------------------------------------
+   Phones: stacked header, compact 2x2 stats, table becomes cards
+   ----------------------------------------------------------------*/
 @media (max-width: 640px) {
-  .dashboard-stats { grid-template-columns: 1fr; }
-  .dashboard-table-card { overflow-x: auto; }
-  .dashboard-table { min-width: 560px; }
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .dashboard-title { font-size: 22px; }
+
+  .dashboard-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px 18px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .dashboard-stat-card { padding: 16px 16px 16px 18px; }
+  .dashboard-stat-value { font-size: 26px; }
+
+  .dashboard-table-card { padding: 16px; }
+
+  .dashboard-table,
+  .dashboard-table tbody,
+  .dashboard-table tr,
+  .dashboard-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .dashboard-table thead { display: none; }
+
+  .dashboard-table tbody tr {
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    background: var(--ws-card);
+    border: 1px solid var(--ws-slate-100);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(18, 24, 31, 0.04);
+  }
+
+  .dashboard-table tbody tr:last-child { margin-bottom: 0; }
+
+  .dashboard-table tbody td,
+  .dashboard-table tbody tr:last-child td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: none;
+    text-align: right;
+  }
+
+  .dashboard-table tbody td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-family: var(--ws-font-body);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ws-slate-600);
+    text-align: left;
+  }
+
+  .dashboard-table tbody td.dashboard-table-tracking {
+    padding-bottom: 10px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--ws-slate-100);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

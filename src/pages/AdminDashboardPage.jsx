@@ -72,10 +72,10 @@ function AdminDashboardPage() {
             <tbody>
               {shipments.map((s) => (
                 <tr key={s._id} onClick={() => window.location.href = `/admin/shipments/${s._id}`}>
-                  <td className="dashboard-table-tracking">{s.trackingNumber}</td>
-                  <td>{s.recipient?.fullName || '—'}</td>
-                  <td>{s.origin.city} → {s.destination.city}</td>
-                  <td><StatusBadge status={s.currentStatus} /></td>
+                  <td data-label="Tracking #" className="dashboard-table-tracking">{s.trackingNumber}</td>
+                  <td data-label="Recipient">{s.recipient?.fullName || '—'}</td>
+                  <td data-label="Route">{s.origin.city} → {s.destination.city}</td>
+                  <td data-label="Status"><StatusBadge status={s.currentStatus} /></td>
                 </tr>
               ))}
             </tbody>
