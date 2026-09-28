@@ -259,3 +259,66 @@ select.form-input {
     text-align: center;
   }
 }
+
+/* ===============================================================
+   RESPONSIVE LAYER NewShipmentPage.css
+   =============================================================== */
+
+html { -webkit-text-size-adjust: 100%; }
+
+input[type='date'].form-input {
+  -webkit-appearance: none;
+  appearance: none;                           /* consistent height on iOS */
+  min-height: 42px;
+}
+
+/* Tablet: 4-col address row becomes 2 cols */
+@media (max-width: 1024px) {
+  .form-grid--4 { grid-template-columns: repeat(2, 1fr); }
+  /* Country label has inline "span 2" — make it a full row instead */
+  .form-grid--4 > .form-label[style] { grid-column: 1 / -1 !important; }
+}
+
+/* Phones */
+@media (max-width: 720px) {
+  .new-shipment-title { font-size: 22px; }
+
+  .form-section { padding: 18px 16px; }
+  .form-grid { gap: 14px; }
+  .form-grid--2,
+  .form-grid--4 { grid-template-columns: 1fr; }
+
+  .form-input {
+    min-height: 46px;
+    font-size: 16px;                          /* stops iOS zoom-on-focus */
+  }
+  textarea.form-input { min-height: 96px; }
+
+  /* Stopover rows become tidy mini-cards */
+  .waypoint-row {
+    grid-template-columns: 1fr 1fr;
+    padding: 12px;
+    background: var(--ws-slate-50);
+    border: 1px solid var(--ws-slate-200);
+    border-radius: 10px;
+  }
+  .waypoint-row > .form-input:first-child { grid-column: 1 / -1; }
+  .waypoint-remove {
+    grid-column: 1 / -1;
+    justify-self: end;
+    width: auto;
+    height: 40px;
+    padding: 0 16px;
+  }
+  .waypoint-add { width: 100%; min-height: 46px; }
+
+  /* Submit stays reachable while scrolling a long form */
+  .new-shipment-submit {
+    position: sticky;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 5;
+    align-self: stretch;
+    min-height: 52px;
+    font-size: 15px;
+  }
+}
