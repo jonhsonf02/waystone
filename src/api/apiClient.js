@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:5000/api/v1';
+const BASE_URL = 'https://wayston.onrender.com/api/v1';
 
 async function rawRequest(path, token, options = {}) {
   return fetch(`${BASE_URL}${path}`, {

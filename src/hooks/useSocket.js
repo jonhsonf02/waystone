@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = 'http://localhost:5000';
+const SOCKET_URL = 'https://wayston.onrender.com';
 
 export function useSocket(trackingNumber, onUpdate) {
   const socketRef = useRef(null);
