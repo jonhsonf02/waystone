@@ -149,3 +149,49 @@ img.login-brand-mark {
   padding: 4px;
   background: var(--ws-white);
 }
+
+/* ===============================================================
+   RESPONSIVE LAYER LoginPage.css
+   =============================================================== */
+
+html { -webkit-text-size-adjust: 100%; }
+
+.login-page {
+  min-height: 100vh;
+  min-height: 100dvh;                         /* iOS Safari address-bar safe */
+  padding:
+    max(1.5rem, env(safe-area-inset-top))
+    max(1.5rem, env(safe-area-inset-right))
+    max(1.5rem, env(safe-area-inset-bottom))
+    max(1.5rem, env(safe-area-inset-left));
+}
+
+/* Tablet */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .login-card { max-width: 26rem; padding: 2.5rem 2.25rem; }
+}
+
+/* Phones — card sits near the top so the keyboard never covers it */
+@media (max-width: 480px) {
+  .login-page {
+    align-items: flex-start;
+    padding-top: max(2rem, env(safe-area-inset-top));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  .login-card {
+    padding: 1.75rem 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 16px 32px rgba(14, 27, 51, 0.14);
+  }
+  .login-input {
+    min-height: 48px;
+    font-size: 16px;                          /* stops iOS zoom-on-focus */
+  }
+  .login-button { min-height: 50px; font-size: 1rem; }
+}
+
+/* Landscape phones */
+@media (max-height: 520px) and (orientation: landscape) {
+  .login-page { align-items: flex-start; }
+}

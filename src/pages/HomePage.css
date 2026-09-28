@@ -642,3 +642,119 @@ img.home-nav-mark {
   padding: 3px;
   background: var(--ws-white);
 }
+
+/* ===============================================================
+   RESPONSIVE LAYER —  Tablet 601–1100 · Desktop >1100
+   =============================================================== */
+
+:root { --ws-white: #ffffff; } /* fixes the logo-image background */
+html { -webkit-text-size-adjust: 100%; }
+
+/* ---------- Tablet & small laptop ---------- */
+@media (max-width: 1100px) {
+  .home-nav { padding: 16px 32px; }
+  .home-hero { padding: 56px 32px 80px; gap: 32px; }
+  .home-stats { margin-left: 32px; margin-right: 32px; padding: 32px; }
+  .home-steps, .home-features, .home-cta { padding-left: 32px; padding-right: 32px; }
+  .home-footer { padding-left: 32px; padding-right: 32px; }
+}
+
+/* ---------- Tablet portrait & below ---------- */
+@media (max-width: 900px) {
+  .home-nav-links { display: none; }
+
+  .home-hero { grid-template-columns: 1fr; gap: 44px; padding: 40px 24px 56px; }
+  .home-hero-visual { order: 0; }            /* search first, graphic second */
+  .home-hero-subtitle { max-width: none; }
+  .route-visual { max-width: 400px; }
+  .route-visual-card--1 { left: 0; }
+  .route-visual-card--2 { right: 0; }
+
+  .home-features-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .home-steps-grid { grid-template-columns: 1fr; gap: 26px; }
+  .home-step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 16px;
+    align-items: start;
+  }
+  .home-step-num { grid-row: 1 / span 2; margin: 0; min-width: 40px; }
+  .home-step h3 { margin-bottom: 4px; }
+
+  .home-footer-grid { grid-template-columns: 1fr 1fr; }
+  .home-footer-brand { grid-column: 1 / -1; }
+}
+
+/* ---------- Phones ---------- */
+@media (max-width: 600px) {
+  .home-nav {
+    padding: 12px max(16px, env(safe-area-inset-right)) 12px max(16px, env(safe-area-inset-left));
+  }
+  .home-nav-signin {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 16px;
+  }
+
+  .home-hero { padding: 28px 16px 48px; gap: 36px; }
+  .home-hero-title { font-size: clamp(30px, 9vw, 38px); }
+  .home-hero-subtitle { font-size: 15px; margin-bottom: 22px; }
+
+  .home-search-card { padding: 14px; border-radius: 14px; }
+  .home-search-row { flex-direction: column; }
+  .home-search-input {
+    flex: none;
+    width: 100%;
+    min-height: 48px;
+    font-size: 16px;                          /* stops iOS zoom-on-focus */
+  }
+  .home-search-btn { width: 100%; min-height: 50px; font-size: 15px; }
+  .home-hero-trust { flex-wrap: wrap; }
+
+  .route-visual { max-width: 340px; }
+  .route-visual-card { padding: 8px 11px; font-size: 12px; }
+
+  .home-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px 12px;
+    margin: 0 16px 56px;
+    padding: 26px 16px;
+    border-radius: 16px;
+  }
+
+  .home-steps, .home-features, .home-cta {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 64px;
+  }
+  .home-section-title { margin-bottom: 32px; }
+
+  .home-features-grid { grid-template-columns: 1fr; gap: 14px; }
+  .home-feature-card { padding: 20px; }
+
+  .home-cta-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px 22px;
+    border-radius: 18px;
+  }
+  .home-cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 50px;
+  }
+
+  .home-footer {
+    padding: 40px 16px calc(24px + env(safe-area-inset-bottom));
+  }
+  .home-footer-grid { grid-template-columns: 1fr; gap: 28px; }
+}
+
+@media (max-width: 360px) {
+  .home-nav-brand span { font-size: 15px; }
+  .home-stat strong { font-size: 20px; }
+}
