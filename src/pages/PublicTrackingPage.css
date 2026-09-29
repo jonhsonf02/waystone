@@ -1,292 +1,571 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+/* ==========================================================================
+   PublicTrackingPage.css
+   Concept: a departure board over a night map. The page is dark and quiet;
+   a bright paper waybill rises out of it. The tracking number sits on a
+   split-flap plate in the hero (the memorable element), and when a live
+   update arrives the whole waybill flashes a teal ring.
+   ========================================================================== */
 
-/* ---------------------------------------------------------------
-   Design tokens — shared across PublicTrackingPage + RouteMap.
-   Prefixed --ws- to match the tokens already referenced inline
-   in RouteMap.jsx (var(--ws-slate-200), var(--ws-blue-600)).
-   ----------------------------------------------------------------*/
-:root {
-  --ws-ink: #12181f;
-  --ws-ink-soft: #3d4552;
-  --ws-paper: #eef1f5;
-  --ws-card: #ffffff;
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@500;700&display=swap');
 
-  --ws-slate-50: #f6f8fa;
-  --ws-slate-100: #eceff3;
-  --ws-slate-200: #dbe1e8;
-  --ws-slate-300: #c2cad4;
-  --ws-slate-400: #98a3b1;
-  --ws-slate-600: #5c6675;
+.tracking-page,
+.tracking-page-state {
+  --tp-night: #070d18;
+  --tp-deep: #0d1a2e;
+  --tp-deep-2: #142640;
+  --tp-paper: #fbfcfb;
+  --tp-mist: #f0f5f3;
+  --tp-line: #dde6e3;
+  --tp-ink: #0e1b2c;
+  --tp-ink-soft: #465569;
+  --tp-muted: #7b8898;
+  --tp-teal: #14b8a0;
+  --tp-teal-deep: #0c7d6c;
+  --tp-teal-tint: #ddf6f1;
+  --tp-amber: #ffb800;
+  --tp-red: #d6423f;
 
-  --ws-blue-50: #ecf1ff;
-  --ws-blue-600: #2a55e0;
-  --ws-blue-700: #1f3fb0;
-
-  --ws-amber-500: #e2861f;
-
-  --ws-green-100: #dcf3e6;
-  --ws-green-600: #1f8f52;
-
-  --ws-red-100: #fbdedb;
-  --ws-red-500: #d1483f;
-
-  --ws-font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
-  --ws-font-body: 'Inter', 'Segoe UI', sans-serif;
-
-  --ws-radius-card: 14px;
-  --ws-radius-chip: 999px;
-  --ws-shadow-card: 0 24px 60px -24px rgba(20, 40, 80, 0.28), 0 2px 6px rgba(20, 40, 80, 0.06);
+  --tp-pad: clamp(1.25rem, 4.5vw, 2.75rem);
+  --tp-font-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --tp-font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tp-font-mono: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace;
+  --tp-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-* { box-sizing: border-box; }
+/* ---------- Page: night map --------------------------------------------- */
 
 .tracking-page {
+  position: relative;
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  padding: 64px 20px;
-  font-family: var(--ws-font-body);
-  color: var(--ws-ink);
-  background-color: var(--ws-paper);
-  background-image: radial-gradient(circle at 1px 1px, rgba(42, 85, 224, 0.08) 1px, transparent 0);
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding: clamp(1rem, 5vw, 3.5rem) clamp(0.75rem, 3vw, 2rem)
+    calc(clamp(1.5rem, 6vw, 4rem) + env(safe-area-inset-bottom, 0px));
+  font-family: var(--tp-font-body);
+  color: var(--tp-ink);
+  background:
+    radial-gradient(60rem 32rem at 15% -10%, rgba(20, 184, 160, 0.22), transparent 60%),
+    radial-gradient(48rem 30rem at 100% 0%, rgba(255, 184, 0, 0.12), transparent 60%),
+    linear-gradient(180deg, var(--tp-deep) 0%, var(--tp-night) 100%);
+  overflow-x: hidden;
+}
+
+/* faint dot grid, like a plotting chart */
+.tracking-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
   background-size: 26px 26px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 55%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 55%);
 }
 
-.tracking-page-state {
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 20px;
-  font-size: 15px;
-  color: var(--ws-slate-600);
-}
-
-.tracking-page-state--error {
-  color: var(--ws-red-500);
-  font-weight: 500;
-}
+/* ---------- The waybill card -------------------------------------------- */
 
 .tracking-page-card {
-  width: 100%;
-  max-width: 640px;
-  background: var(--ws-card);
-  border: 1px solid var(--ws-slate-200);
-  border-radius: var(--ws-radius-card);
-  box-shadow: var(--ws-shadow-card);
-  padding: 40px 40px 44px;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: var(--tp-pad);
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--tp-paper);
+  border-radius: 28px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 40px 80px -30px rgba(0, 0, 0, 0.75),
+    0 0 90px -30px rgba(20, 184, 160, 0.45);
+  animation: tp-rise 0.9s var(--tp-ease) both;
 }
 
+@keyframes tp-rise {
+  from { opacity: 0; transform: translateY(36px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* live update: a teal ring blooms outward from the card */
 .tracking-page-card--pulse {
-  animation: trackingCardPulse 2s ease;
+  animation: tp-live 1.8s var(--tp-ease);
 }
 
-@keyframes trackingCardPulse {
-  0%   { box-shadow: 0 0 0 0 rgba(42, 85, 224, 0.45), var(--ws-shadow-card); }
-  25%  { box-shadow: 0 0 0 5px rgba(42, 85, 224, 0.16), var(--ws-shadow-card); }
-  100% { box-shadow: 0 0 0 0 rgba(42, 85, 224, 0), var(--ws-shadow-card); }
+@keyframes tp-live {
+  0%   { box-shadow: 0 0 0 0 rgba(20, 184, 160, 0.65), 0 40px 80px -30px rgba(0, 0, 0, 0.75); }
+  60%  { box-shadow: 0 0 0 22px rgba(20, 184, 160, 0), 0 40px 80px -30px rgba(0, 0, 0, 0.75); }
+  100% { box-shadow: 0 0 0 0 rgba(20, 184, 160, 0), 0 40px 80px -30px rgba(0, 0, 0, 0.75); }
 }
 
-/* Header */
+.tracking-page-card > * {
+  margin: 0;
+}
+
+/* ---------- Hero header (bleeds to card edges) -------------------------- */
+
 .tracking-page-header {
+  position: relative;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 20px;
-  padding-bottom: 26px;
-  margin-bottom: 22px;
-  border-bottom: 1px solid var(--ws-slate-100);
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin: calc(var(--tp-pad) * -1) calc(var(--tp-pad) * -1) 0 !important;
+  padding: var(--tp-pad) var(--tp-pad) calc(var(--tp-pad) + 1.75rem);
+  color: #eaf1f7;
+  background:
+    radial-gradient(28rem 14rem at 0% 0%, rgba(20, 184, 160, 0.35), transparent 65%),
+    linear-gradient(135deg, var(--tp-deep-2), var(--tp-night));
+  overflow: hidden;
+}
+
+/* a dashed flight path arcing across the hero */
+.tracking-page-header::before {
+  content: '';
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: -60%;
+  height: 120%;
+  border: 2px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.tracking-page-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--tp-teal), var(--tp-amber));
+  transform-origin: left;
+  animation: tp-sweep 1.6s var(--tp-ease) 0.3s both;
+}
+
+@keyframes tp-sweep {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+.tracking-page-header > * {
+  position: relative;
+  z-index: 1;
 }
 
 .tracking-page-eyebrow {
-  margin: 0 0 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ws-slate-600);
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: rgba(234, 241, 247, 0.65);
 }
 
+/* split-flap plate */
 .tracking-page-number {
+  position: relative;
+  display: inline-block;
   margin: 0;
-  font-family: var(--ws-font-display);
+  padding: 0.55rem 1rem;
+  font-family: var(--tp-font-mono);
+  font-size: clamp(1.25rem, 5.2vw, 2.3rem);
   font-weight: 700;
-  font-size: clamp(26px, 4.4vw, 34px);
-  line-height: 1.1;
-  letter-spacing: 0.01em;
-  font-variant-numeric: tabular-nums;
-  color: var(--ws-ink);
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  color: #fff;
+  word-break: break-all;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 12px 24px -12px rgba(0, 0, 0, 0.7);
+}
+
+.tracking-page-number::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: rgba(7, 13, 24, 0.75);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .tracking-page-order-date {
-  margin: 10px 0 0;
-  font-size: 13px;
-  color: var(--ws-slate-400);
+  margin: 0.9rem 0 0;
+  font-size: 0.92rem;
+  color: rgba(234, 241, 247, 0.6);
 }
 
-/* Live update note */
+/* ---------- Live note: floating toast ----------------------------------- */
+
 .tracking-page-live-note {
+  position: fixed !important;
+  top: max(1rem, env(safe-area-inset-top, 0px));
+  left: 50%;
+  z-index: 50;
   display: inline-flex;
   align-items: center;
-  margin: -6px 0 18px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ws-amber-500);
-  animation: liveNoteFade 2s ease forwards;
+  gap: 0.5rem;
+  padding: 0.65rem 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #04231e;
+  background: var(--tp-teal);
+  border-radius: 999px;
+  box-shadow: 0 16px 30px -12px rgba(20, 184, 160, 0.9);
+  transform: translateX(-50%);
+  animation: tp-toast 2s var(--tp-ease) both;
 }
 
-@keyframes liveNoteFade {
-  0%   { opacity: 0; transform: translateY(-4px); }
-  15%  { opacity: 1; transform: translateY(0); }
-  82%  { opacity: 1; }
-  100% { opacity: 0; }
+@keyframes tp-toast {
+  0%   { opacity: 0; transform: translate(-50%, -20px) scale(0.9); }
+  12%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  85%  { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -12px) scale(0.96); }
 }
+
+/* ---------- ETA: floats over the hero edge ------------------------------ */
 
 .tracking-page-eta {
-  margin: 0 0 22px;
-  font-size: 14px;
-  color: var(--ws-slate-600);
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+  margin-top: -3.2rem !important;
+  padding: 1.05rem 1.35rem;
+  font-size: 0.98rem;
+  color: var(--tp-ink-soft);
+  background: var(--tp-paper);
+  border: 1px solid var(--tp-line);
+  border-left: 5px solid var(--tp-amber);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px -20px rgba(7, 13, 24, 0.55);
 }
 
 .tracking-page-eta strong {
-  color: var(--ws-ink);
-  font-weight: 600;
+  font-family: var(--tp-font-display);
+  font-size: clamp(1.1rem, 3.2vw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--tp-ink);
 }
 
-/* Current location */
+/* ---------- Current location: live radar -------------------------------- */
+
 .tracking-page-current-location {
+  position: relative;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 26px 0;
-  padding: 14px 18px;
-  background: var(--ws-blue-50);
-  border-radius: 10px;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1.2rem 5rem 1.2rem 1.4rem;
+  overflow: hidden;
+  background: linear-gradient(120deg, var(--tp-teal-tint), var(--tp-mist));
+  border: 1px solid #c4ebe3;
+  border-radius: 16px;
+}
+
+.tracking-page-current-location::before,
+.tracking-page-current-location::after {
+  content: '';
+  position: absolute;
+  right: 1.9rem;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  border-radius: 50%;
+  background: var(--tp-teal);
+}
+
+.tracking-page-current-location::after {
+  background: transparent;
+  border: 2px solid var(--tp-teal);
+  animation: tp-radar 2.4s ease-out infinite;
+}
+
+@keyframes tp-radar {
+  from { transform: scale(1);   opacity: 0.9; }
+  to   { transform: scale(4.2); opacity: 0; }
 }
 
 .tracking-page-current-location-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ws-slate-600);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--tp-teal-deep);
 }
 
 .tracking-page-current-location-value {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--ws-blue-700);
-  text-align: right;
+  font-family: var(--tp-font-display);
+  font-size: clamp(1.15rem, 3.6vw, 1.55rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--tp-ink);
 }
 
-/* Planned route chips */
-.tracking-page-route {
-  margin: 26px 0;
-}
+/* ---------- Planned route: stops on a line ------------------------------ */
 
 .tracking-page-summary-label {
-  margin: 0 0 10px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ws-slate-600);
+  margin: 0 0 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--tp-muted);
 }
 
 .tracking-page-route-chips {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
+  gap: 0.75rem 0;
+  margin-top: 0.75rem;
 }
 
 .tracking-page-route-chip {
   position: relative;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ws-slate-600);
-  background: var(--ws-slate-50);
-  border: 1px solid var(--ws-slate-200);
-  border-radius: var(--ws-radius-chip);
-  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-right: 2.4rem;
+  padding: 0.55rem 0.95rem 0.55rem 0.8rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--tp-ink);
+  background: var(--tp-mist);
+  border: 1px solid var(--tp-line);
+  border-radius: 999px;
+  transition: transform 0.25s var(--tp-ease), border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.tracking-page-route-chip::before {
+  content: '';
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tp-paper);
+  border: 2px solid var(--tp-teal);
 }
 
 .tracking-page-route-chip:not(:last-child)::after {
   content: '';
   position: absolute;
+  left: 100%;
   top: 50%;
-  right: -10px;
-  width: 6px;
-  height: 1px;
-  background: var(--ws-slate-300);
+  width: 2.4rem;
+  height: 2px;
   transform: translateY(-50%);
+  background: repeating-linear-gradient(90deg, var(--tp-teal) 0 5px, transparent 5px 9px);
+}
+
+.tracking-page-route-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--tp-teal);
 }
 
 .tracking-page-route-chip--origin {
   color: #fff;
-  background: var(--ws-ink);
-  border-color: var(--ws-ink);
+  background: var(--tp-ink);
+  border-color: var(--tp-ink);
+}
+
+.tracking-page-route-chip--origin::before {
+  background: var(--tp-teal);
+  border-color: var(--tp-teal);
 }
 
 .tracking-page-route-chip--dest {
-  color: #fff;
-  background: var(--ws-green-600);
-  border-color: var(--ws-green-600);
+  color: #2b1f00;
+  background: var(--tp-amber);
+  border-color: var(--tp-amber);
 }
 
-/* From / To / Recipient summary */
+.tracking-page-route-chip--dest::before {
+  background: #2b1f00;
+  border-color: #2b1f00;
+  border-radius: 2px;
+}
+
+/* ---------- Summary: From / To / Recipient ------------------------------ */
+
 .tracking-page-summary {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin: 30px 0;
-  padding: 22px 0;
-  border-top: 1px solid var(--ws-slate-100);
-  border-bottom: 1px solid var(--ws-slate-100);
+  border: 1px solid var(--tp-line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--tp-paper);
 }
 
-.tracking-page-summary p {
+.tracking-page-summary > div {
+  padding: 1.2rem 1.35rem;
+  border-right: 1px solid var(--tp-line);
+  transition: background-color 0.2s ease;
+}
+
+.tracking-page-summary > div:last-child {
+  border-right: 0;
+}
+
+.tracking-page-summary > div:hover {
+  background: var(--tp-mist);
+}
+
+.tracking-page-summary p:not(.tracking-page-summary-label) {
   margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--tp-ink);
 }
 
-.tracking-page-summary p:last-child {
-  margin-top: 4px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ws-ink);
-}
+/* ---------- Contents: a parcel label ------------------------------------ */
 
-/* Contents */
 .tracking-page-contents {
-  margin: 22px 0;
+  padding: 1.2rem 1.4rem;
+  background: var(--tp-mist);
+  border: 2px dashed #c7d4d0;
+  border-radius: 16px;
 }
 
 .tracking-page-contents-text {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--ws-slate-600);
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: var(--tp-ink);
 }
 
-/* Timeline heading */
+/* ---------- Timeline title (Timeline.jsx brings its own CSS) ------------ */
+
 .tracking-page-timeline-title {
-  margin: 30px 0 16px;
-  font-family: var(--ws-font-display);
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--ws-ink);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.75rem 0 0 !important;
+  font-family: var(--tp-font-display);
+  font-size: clamp(1.3rem, 3.6vw, 1.7rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--tp-ink);
 }
 
-@media (max-width: 640px) {
-  .tracking-page { padding: 32px 12px; }
-  .tracking-page-card { padding: 28px 20px 32px; border-radius: 12px; }
-  .tracking-page-header { flex-direction: column; align-items: flex-start; }
-  .tracking-page-current-location { flex-direction: column; align-items: flex-start; gap: 4px; }
-  .tracking-page-current-location-value { text-align: left; }
-  .tracking-page-summary { grid-template-columns: 1fr; gap: 14px; }
+.tracking-page-timeline-title::after {
+  content: '';
+  flex: 1;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--tp-line), transparent);
 }
+
+/* ---------- Loading / error states -------------------------------------- */
+
+.tracking-page-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding: 2rem;
+  text-align: center;
+  font-family: var(--tp-font-body);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #eaf1f7;
+  background:
+    radial-gradient(40rem 24rem at 50% 0%, rgba(20, 184, 160, 0.2), transparent 65%),
+    linear-gradient(180deg, var(--tp-deep), var(--tp-night));
+}
+
+.tracking-page-state--error {
+  flex-direction: column;
+  gap: 1rem;
+  color: #ffd9d8;
+}
+
+.tracking-page-state--error::before {
+  content: '!';
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  font-family: var(--tp-font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--tp-red);
+  border-radius: 50%;
+  box-shadow: 0 0 0 10px rgba(214, 66, 63, 0.2);
+}
+
+/* ---------- Responsive --------------------------------------------------- */
+
+@media (max-width: 680px) {
+  .tracking-page-card {
+    border-radius: 22px;
+  }
+
+  .tracking-page-header {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+  }
+
+  .tracking-page-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .tracking-page-summary > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--tp-line);
+  }
+
+  .tracking-page-summary > div:last-child {
+    border-bottom: 0;
+  }
+
+  .tracking-page-current-location {
+    padding-right: 3.6rem;
+  }
+
+  .tracking-page-current-location::before,
+  .tracking-page-current-location::after {
+    right: 1.3rem;
+  }
+
+  /* route becomes a vertical stepper */
+  .tracking-page-route-chips {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .tracking-page-route-chip {
+    margin-right: 0;
+  }
+
+  .tracking-page-route-chip:not(:last-child)::after {
+    top: 100%;
+    left: 1.05rem;
+    width: 2px;
+    height: 1.5rem;
+    transform: none;
+    background: repeating-linear-gradient(180deg, var(--tp-teal) 0 5px, transparent 5px 9px);
+  }
+}
+
+/* ---------- Reduced motion ---------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
-  .tracking-page-card--pulse,
+  .tracking-page *,
+  .tracking-page *::before,
+  .tracking-page *::after,
+  .tracking-page-card,
   .tracking-page-live-note {
-    animation: none;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
