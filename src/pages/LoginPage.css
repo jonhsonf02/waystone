@@ -1,243 +1,335 @@
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&display=swap');
+/* ==========================================================================
+   LoginPage.css  (Waystone staff sign in)
+
+   A bright sign-in card on the same night-map backdrop as the public site,
+   so staff feel the brand before they even sign in.
+
+   Phones: inputs are 16px (no iOS zoom), 54px tall, the card sits clear of the
+   notch and home bar, and the page scrolls when the keyboard is open.
+   Needs viewport-fit=cover in index.html for the safe-area values.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap');
 
 .login-page {
-  --ws-white: #ffffff;
-  --ws-slate-50: #f6f7f9;
-  --ws-slate-200: #dde1e8;
-  --ws-slate-300: #c3c9d4;
-  --ws-slate-500: #6a7383;
-  --ws-slate-600: #4a5262;
-  --ws-navy-900: #0e1b33;
-  --ws-blue-600: #2f6fe4;
-  --ws-red-600: #c0402b;
-  --ws-red-100: #fbe8e5;
+  --lg-night: #070d18;
+  --lg-deep: #0d1a2e;
+  --lg-ink: #0e1b2c;
+  --lg-soft: #465569;
+  --lg-muted: #7b8898;
+  --lg-field: #f0f5f3;
+  --lg-line: #dde6e3;
+  --lg-teal: #14b8a0;
+  --lg-teal-deep: #0c7d6c;
+  --lg-amber: #ffb800;
+  --lg-red: #d6423f;
+  --lg-font-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --lg-font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --lg-ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-  min-height: 100vh;
+  position: relative;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, var(--ws-navy-900) 0%, var(--ws-navy-900) 240px, var(--ws-slate-50) 240px);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  padding: 1.5rem;
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding: max(20px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px))
+    max(20px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  font-family: var(--lg-font-body);
+  color: var(--lg-ink);
+  background:
+    radial-gradient(50rem 30rem at 12% 0%, rgba(20, 184, 160, 0.3), transparent 60%),
+    radial-gradient(40rem 26rem at 100% 100%, rgba(255, 184, 0, 0.13), transparent 60%),
+    linear-gradient(180deg, var(--lg-deep), var(--lg-night));
+  overflow-x: hidden;
 }
 
-.login-page * {
+/* dot grid */
+.login-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 40%, #000, transparent 75%);
+  mask-image: radial-gradient(ellipse at 50% 40%, #000, transparent 75%);
+}
+
+.login-page *,
+.login-page *::before,
+.login-page *::after {
   box-sizing: border-box;
 }
 
+/* ---------- Card --------------------------------------------------------- */
+
 .login-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 23rem;
-  background: var(--ws-white);
-  border: 1px solid var(--ws-slate-200);
-  border-radius: 14px;
-  padding: 2.25rem 2rem;
-  box-shadow: 0 24px 48px rgba(14, 27, 51, 0.16);
+  max-width: 440px;
+  /* margin auto centres it, and still lets the page scroll if the keyboard shrinks the screen */
+  margin: auto;
+  padding: clamp(28px, 6vw, 44px);
+  overflow: hidden;
+  background: #fff;
+  border-radius: 28px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 44px 80px -30px rgba(0, 0, 0, 0.8);
+  animation: lg-rise 0.8s var(--lg-ease) both;
 }
+
+@keyframes lg-rise {
+  from { opacity: 0; transform: translateY(30px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* route line across the top */
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--lg-teal), var(--lg-amber));
+  transform-origin: left;
+  animation: lg-draw 1.2s var(--lg-ease) 0.3s both;
+}
+
+@keyframes lg-draw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* faint orbit ring in the corner */
+.login-card::after {
+  content: '';
+  position: absolute;
+  right: -120px;
+  bottom: -140px;
+  width: 300px;
+  height: 300px;
+  border: 2px dashed rgba(20, 184, 160, 0.16);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.login-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Brand + heading --------------------------------------------- */
 
 .login-brand {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  margin-bottom: 2rem;
+  gap: 12px;
+  margin-bottom: 30px;
 }
 
 .login-brand-mark {
-  width: 2.1rem;
-  height: 2.1rem;
-  display: grid;
-  place-items: center;
-  background: var(--ws-navy-900);
-  color: var(--ws-white);
-  border-radius: 6px;
-  font-family: 'Archivo', sans-serif;
-  font-weight: 800;
-  font-size: 1rem;
+  width: 46px;
+  height: 46px;
+  padding: 5px;
+  object-fit: contain;
+  background: linear-gradient(135deg, #1e5eff, #1749d6);
+  border-radius: 13px;
+  box-shadow: 0 8px 18px -6px rgba(30, 94, 255, 0.6);
 }
 
 .login-brand-name {
-  font-family: 'Archivo', sans-serif;
-  font-weight: 700;
-  font-size: 1.05rem;
-  color: var(--ws-navy-900);
+  font-family: var(--lg-font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .login-title {
-  margin: 0;
-  font-family: 'Archivo', sans-serif;
-  font-weight: 700;
-  font-size: 1.4rem;
-  color: var(--ws-navy-900);
+  margin: 0 0 6px;
+  font-family: var(--lg-font-display);
+  font-size: clamp(1.6rem, 5vw, 1.95rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
 }
 
 .login-subtitle {
-  margin: 0.35rem 0 1.5rem;
-  font-size: 0.88rem;
-  color: var(--ws-slate-500);
+  margin: 0 0 28px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--lg-muted);
 }
+
+/* ---------- Error -------------------------------------------------------- */
 
 .login-error {
-  margin: 0 0 1.1rem;
-  padding: 0.65rem 0.85rem;
-  background: var(--ws-red-100);
-  color: var(--ws-red-600);
-  border-radius: 8px;
-  font-size: 0.84rem;
+  margin: 0 0 20px;
+  padding: 13px 16px;
+  font-size: 0.94rem;
   font-weight: 500;
+  line-height: 1.5;
+  color: var(--lg-red);
+  background: #fdeceb;
+  border-left: 4px solid var(--lg-red);
+  border-radius: 12px;
+  animation: lg-nudge 0.45s var(--lg-ease);
 }
 
+@keyframes lg-nudge {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-6px); }
+  55%  { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
+/* ---------- Fields ------------------------------------------------------- */
+
 .login-label {
-  display: block;
-  font-size: 0.82rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: var(--ws-slate-600);
-  margin-bottom: 1.1rem;
+  color: var(--lg-soft);
 }
 
 .login-input {
   display: block;
   width: 100%;
-  margin-top: 0.4rem;
-  padding: 0.7rem 0.85rem;
-  font-family: inherit;
-  font-size: 0.92rem;
+  min-height: 54px;
+  padding: 0 16px;
+  font-family: var(--lg-font-body);
+  font-size: 1rem;
   font-weight: 400;
-  color: var(--ws-navy-900);
-  background: var(--ws-white);
-  border: 1px solid var(--ws-slate-300);
-  border-radius: 8px;
+  color: var(--lg-ink);
+  background: var(--lg-field);
+  border: 1.5px solid var(--lg-line);
+  border-radius: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
 }
 
-.login-input:focus-visible {
-  outline: 2px solid var(--ws-blue-600);
-  outline-offset: 1px;
-  border-color: var(--ws-blue-600);
+.login-input:hover {
+  border-color: #b9c8c4;
 }
+
+.login-input:focus {
+  outline: none;
+  background: #fff;
+  border-color: var(--lg-teal);
+  box-shadow: 0 0 0 4px rgba(20, 184, 160, 0.18);
+}
+
+/* keep autofill from painting a yellow or blue box */
+.login-input:-webkit-autofill,
+.login-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--lg-ink);
+  box-shadow: 0 0 0 100px var(--lg-field) inset;
+}
+
+/* ---------- Button ------------------------------------------------------- */
 
 .login-button {
-  width: 100%;
-  margin-top: 0.4rem;
-  padding: 0.8rem;
-  border: none;
-  border-radius: 8px;
-  background: var(--ws-navy-900);
-  color: var(--ws-white);
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 0.92rem;
+  min-height: 56px;
+  margin-top: 6px;
+  padding: 0 24px;
+  font-family: var(--lg-font-body);
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: #fff;
   cursor: pointer;
-  transition: background-color 150ms ease;
+  background: linear-gradient(135deg, var(--lg-teal), var(--lg-teal-deep));
+  border: 0;
+  border-radius: 14px;
+  box-shadow: 0 16px 28px -12px rgba(20, 184, 160, 0.95);
+  transition: transform 0.16s var(--lg-ease), box-shadow 0.16s var(--lg-ease);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-.login-button:hover:not(:disabled) {
-  background: var(--ws-blue-600);
+.login-button:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .login-button:disabled {
-  opacity: 0.6;
-  cursor: default;
+  cursor: progress;
+  opacity: 0.88;
+  background-image: linear-gradient(110deg, var(--lg-teal) 30%, #35c2ae 50%, var(--lg-teal) 70%);
+  background-size: 200% 100%;
+  animation: lg-shimmer 1.2s linear infinite;
 }
 
+@keyframes lg-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+.login-button:focus-visible {
+  outline: 3px solid var(--lg-amber);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .login-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 34px -14px rgba(20, 184, 160, 1);
+  }
+}
+
+/* ---------- Phones and small screens ------------------------------------ */
+
+@media (max-width: 480px) {
+  .login-card {
+    border-radius: 24px;
+  }
+
+  .login-brand {
+    margin-bottom: 24px;
+  }
+
+  /* 16px stops iOS Safari zooming into the field */
+  .login-input {
+    min-height: 54px;
+    font-size: 16px;
+  }
+}
+
+/* Short landscape phones: keep everything reachable */
+@media (max-height: 520px) {
+  .login-card {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  .login-brand {
+    margin-bottom: 16px;
+  }
+
+  .login-subtitle {
+    margin-bottom: 18px;
+  }
+
+  .login-label {
+    margin-bottom: 14px;
+  }
+}
+
+/* ---------- Reduced motion ------------------------------------------------ */
+
 @media (prefers-reduced-motion: reduce) {
+  .login-card,
+  .login-card::before,
+  .login-error,
+  .login-button:disabled {
+    animation: none;
+  }
+
+  .login-input,
   .login-button {
     transition: none;
   }
-}
-
-img.login-brand-mark {
-  object-fit: contain;
-  padding: 4px;
-  background: var(--ws-white);
-}
-
-/* ===============================================================
-   RESPONSIVE LAYER LoginPage.css
-   =============================================================== */
-
-html { -webkit-text-size-adjust: 100%; }
-
-.login-page {
-  min-height: 100vh;
-  min-height: 100dvh;                         /* iOS Safari address-bar safe */
-  padding:
-    max(1.5rem, env(safe-area-inset-top))
-    max(1.5rem, env(safe-area-inset-right))
-    max(1.5rem, env(safe-area-inset-bottom))
-    max(1.5rem, env(safe-area-inset-left));
-}
-
-/* Tablet */
-@media (min-width: 481px) and (max-width: 1024px) {
-  .login-card { max-width: 26rem; padding: 2.5rem 2.25rem; }
-}
-
-/* Phones — card sits near the top so the keyboard never covers it */
-@media (max-width: 480px) {
-  .login-page {
-    align-items: flex-start;
-    padding-top: max(2rem, env(safe-area-inset-top));
-    padding-left: max(1rem, env(safe-area-inset-left));
-    padding-right: max(1rem, env(safe-area-inset-right));
-  }
-  .login-card {
-    padding: 1.75rem 1.25rem;
-    border-radius: 12px;
-    box-shadow: 0 16px 32px rgba(14, 27, 51, 0.14);
-  }
-  .login-input {
-    min-height: 48px;
-    font-size: 16px;                          /* stops iOS zoom-on-focus */
-  }
-  .login-button { min-height: 50px; font-size: 1rem; }
-}
-
-/* Landscape phones */
-@media (max-height: 520px) and (orientation: landscape) {
-  .login-page { align-items: flex-start; }
-}
-
-/* ===============================================================
-   RESPONSIVE LAYER LoginPage.css
-   =============================================================== */
-
-html { -webkit-text-size-adjust: 100%; }
-
-.login-page {
-  min-height: 100vh;
-  min-height: 100dvh;                         /* iOS Safari address-bar safe */
-  padding:
-    max(1.5rem, env(safe-area-inset-top))
-    max(1.5rem, env(safe-area-inset-right))
-    max(1.5rem, env(safe-area-inset-bottom))
-    max(1.5rem, env(safe-area-inset-left));
-}
-
-/* Tablet */
-@media (min-width: 481px) and (max-width: 1024px) {
-  .login-card { max-width: 26rem; padding: 2.5rem 2.25rem; }
-}
-
-/* Phones — card sits near the top so the keyboard never covers it */
-@media (max-width: 480px) {
-  .login-page {
-    align-items: flex-start;
-    padding-top: max(2rem, env(safe-area-inset-top));
-    padding-left: max(1rem, env(safe-area-inset-left));
-    padding-right: max(1rem, env(safe-area-inset-right));
-  }
-  .login-card {
-    padding: 1.75rem 1.25rem;
-    border-radius: 12px;
-    box-shadow: 0 16px 32px rgba(14, 27, 51, 0.14);
-  }
-  .login-input {
-    min-height: 48px;
-    font-size: 16px;                          /* stops iOS zoom-on-focus */
-  }
-  .login-button { min-height: 50px; font-size: 1rem; }
-}
-
-/* Landscape phones */
-@media (max-height: 520px) and (orientation: landscape) {
-  .login-page { align-items: flex-start; }
 }

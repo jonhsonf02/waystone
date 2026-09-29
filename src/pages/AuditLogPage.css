@@ -1,227 +1,364 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+/* ==========================================================================
+   AuditLogPage.css  (Waystone)
 
-/* ---------------------------------------------------------------
-   Audit Log — token system
-   An immutable ledger reads best as a ledger: quiet ink on paper-
-   dark stock, entries set in a metered mono for exact alignment,
-   headings in a plain grotesque so the data stays the star.
------------------------------------------------------------------- */
-:root {
-  --al-bg: #0f1115;
-  --al-surface: #161920;
-  --al-surface-raised: #1b1f27;
-  --al-line: #262b34;
-  --al-line-soft: #1e222a;
-  --al-ink: #e7e9ed;
-  --al-ink-dim: #838a99;
-  --al-ink-faint: #565d6b;
-  --al-accent: #4c7cf0;
-  --al-accent-dim: #2c3a5c;
-  --al-danger: #e0654f;
-  --al-danger-dim: #47281f;
-}
+   A ledger: quiet, precise, easy to scan. Timestamps and IDs are monospaced,
+   actions are pills, and the JSON details stay readable at any width.
+
+   - Desktop / iPad: a full table (the card scrolls sideways if it must).
+   - Phones (up to 640px): every entry becomes a card. The table markup has
+     no data-label attributes, so the labels below are added with :nth-child.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
 
 .audit-header,
-.audit-card,
-.audit-card * {
-  box-sizing: border-box;
-  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+.audit-card {
+  --au-ink: #12181f;
+  --au-ink-soft: #3d4552;
+  --au-muted: #6b7686;
+  --au-line: #eceff3;
+  --au-line-strong: #dbe1e8;
+  --au-field: #f4f7f8;
+  --au-teal: #0e9488;
+  --au-teal-deep: #0b7d73;
+  --au-teal-tint: #e6f7f6;
+  --au-red: #b13a32;
+  --au-font-display: var(--ws-font-display, 'Space Grotesk', 'Segoe UI', sans-serif);
+  --au-font-body: var(--ws-font-body, 'Inter', 'Segoe UI', system-ui, sans-serif);
+  --au-font-mono: var(--ws-font-mono, 'JetBrains Mono', ui-monospace, monospace);
+  --au-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* ---------------------------------------------------------------
-   Header
------------------------------------------------------------------- */
+/* ---------- Header ------------------------------------------------------- */
+
 .audit-header {
-  padding: 2.75rem clamp(1.25rem, 4vw, 3rem) 1.75rem;
-  border-bottom: 1px solid var(--al-line-soft);
+  margin-bottom: 28px;
+  font-family: var(--au-font-body);
 }
 
 .audit-title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--al-ink);
+  margin: 0 0 6px;
+  font-family: var(--au-font-display);
+  font-size: clamp(1.6rem, 3.4vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--au-ink);
 }
 
 .audit-subtitle {
-  margin: 0.4rem 0 0;
-  font-size: 0.9rem;
-  color: var(--al-ink-dim);
-  max-width: 46ch;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.96rem;
   line-height: 1.5;
+  color: var(--au-muted);
 }
 
+/* small padlock: the log cannot be edited */
 .audit-subtitle::before {
   content: '';
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--al-accent);
-  margin-right: 0.55rem;
-  vertical-align: middle;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  background: var(--au-teal);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 10V8a6 6 0 1112 0v2h1a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1h1zm2 0h8V8a4 4 0 10-8 0v2z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 10V8a6 6 0 1112 0v2h1a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1h1zm2 0h8V8a4 4 0 10-8 0v2z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
-/* ---------------------------------------------------------------
-   Card / frame
------------------------------------------------------------------- */
+/* ---------- Card --------------------------------------------------------- */
+
 .audit-card {
-  margin: 1.75rem clamp(1.25rem, 4vw, 3rem) 3rem;
-  background: var(--al-surface);
-  border: 1px solid var(--al-line);
-  border-radius: 10px;
-  overflow: hidden;
+  padding: 8px 10px 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  font-family: var(--au-font-body);
+  background: #fff;
+  border: 1px solid var(--au-line);
+  border-radius: 18px;
+  box-shadow: 0 1px 2px rgba(18, 24, 31, 0.04), 0 14px 32px -18px rgba(18, 24, 31, 0.18);
+  animation: au-rise 0.6s var(--au-ease) backwards;
 }
 
-/* ---------------------------------------------------------------
-   States: loading / error / empty
-   Each reads differently — a ledger with nothing in it yet is not
-   the same condition as one that failed to load.
------------------------------------------------------------------- */
+@keyframes au-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Empty / loading / error ------------------------------------- */
+
 .audit-empty {
-  margin: 0;
-  padding: 3.5rem 2rem;
+  margin: 14px;
+  padding: 44px 16px;
   text-align: center;
-  font-size: 0.9rem;
-  color: var(--al-ink-faint);
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: var(--au-muted);
+  background: #f6f8fa;
+  border: 1.5px dashed var(--au-line-strong);
+  border-radius: 14px;
 }
 
 .audit-empty--error {
-  color: var(--al-danger);
-  background: linear-gradient(180deg, var(--al-danger-dim) 0%, transparent 90%);
+  font-weight: 500;
+  color: var(--au-red);
+  background: #fdf1f0;
+  border: 1px solid #fbdedb;
 }
 
-/* ---------------------------------------------------------------
-   Table
------------------------------------------------------------------- */
+/* ---------- Table (desktop + tablet) ------------------------------------ */
+
 .audit-table {
   width: 100%;
+  min-width: 640px;
   border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
 }
 
 .audit-table thead th {
+  padding: 16px 14px 12px;
   text-align: left;
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--al-ink-faint);
-  padding: 0.85rem 1.25rem;
-  border-bottom: 1px solid var(--al-line);
-  background: var(--al-surface-raised);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--au-muted);
   white-space: nowrap;
+  border-bottom: 1px solid var(--au-line-strong);
 }
 
-.audit-table thead th:first-child {
-  width: 13rem;
-}
-
-.audit-table tbody tr {
-  border-bottom: 1px solid var(--al-line-soft);
-  transition: background-color 120ms ease, border-left-color 120ms ease;
-  border-left: 2px solid transparent;
-}
-
-.audit-table tbody tr:last-child {
-  border-bottom: none;
-}
-
-.audit-table tbody tr:hover {
-  background: var(--al-surface-raised);
-  border-left-color: var(--al-accent);
-}
-
-.audit-table td {
-  padding: 0.85rem 1.25rem;
-  font-size: 0.85rem;
-  color: var(--al-ink);
+.audit-table tbody td {
+  padding: 15px 14px;
   vertical-align: top;
+  line-height: 1.5;
+  color: var(--au-ink-soft);
+  border-bottom: 1px solid var(--au-line);
 }
 
-.audit-table td:first-child {
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.78rem;
-  color: var(--al-ink-dim);
-  white-space: nowrap;
+.audit-table tbody tr:last-child td {
+  border-bottom: 0;
 }
 
-/* Actor */
-.audit-table td:nth-child(2) {
-  color: var(--al-ink);
+/* when */
+.audit-table tbody td:nth-child(1) {
+  font-family: var(--au-font-mono);
+  font-size: 0.8rem;
   font-weight: 500;
+  white-space: nowrap;
+  color: var(--au-muted);
+  font-variant-numeric: tabular-nums;
 }
 
-/* Action — a system code, set apart in a metered face rather than
-   dressed up as a generic status pill */
+/* actor */
+.audit-table tbody td:nth-child(2) {
+  font-weight: 600;
+  color: var(--au-ink);
+}
+
 .audit-action {
-  display: inline-flex;
-  align-items: center;
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.76rem;
-  color: var(--al-accent);
-  background: var(--al-accent-dim);
-  border: 1px solid rgba(76, 124, 240, 0.35);
-  border-radius: 5px;
-  padding: 0.2rem 0.5rem;
+  display: inline-block;
+  padding: 4px 11px;
+  font-family: var(--au-font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
   line-height: 1.4;
-}
-
-/* Target */
-.audit-table td:nth-child(4) {
-  color: var(--al-ink-dim);
-  font-size: 0.83rem;
+  color: var(--au-teal-deep);
+  white-space: nowrap;
+  background: var(--au-teal-tint);
+  border-radius: 999px;
 }
 
 .audit-target-id {
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 7px;
+  font-family: var(--au-font-mono);
   font-size: 0.76rem;
-  color: var(--al-ink-faint);
-  margin-left: 0.35rem;
+  color: var(--au-muted);
+  background: var(--au-field);
+  border-radius: 6px;
 }
 
-/* Details — the raw record; long JSON should scroll, never wrap
-   the row taller than its neighbours */
 .audit-details {
-  max-width: 22rem;
-  font-family: 'IBM Plex Mono', ui-monospace, monospace;
-  font-size: 0.74rem;
-  color: var(--al-ink-faint);
-  white-space: nowrap;
-  overflow-x: auto;
-  scrollbar-width: thin;
+  min-width: 220px;
+  max-width: 360px;
+  font-family: var(--au-font-mono);
+  font-size: 0.76rem !important;
+  line-height: 1.55 !important;
+  color: var(--au-muted) !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
-.audit-details::-webkit-scrollbar {
-  height: 4px;
+@media (hover: hover) and (pointer: fine) {
+  .audit-table tbody tr {
+    transition: background-color 0.14s ease;
+  }
+
+  .audit-table tbody tr:hover {
+    background: #f7fafa;
+  }
+
+  .audit-table tbody tr:hover td:first-child {
+    box-shadow: inset 3px 0 0 var(--au-teal);
+  }
 }
 
-.audit-details::-webkit-scrollbar-thumb {
-  background: var(--al-line);
-  border-radius: 4px;
+/* ==========================================================================
+   Tablet portrait (641px to 860px)
+   ========================================================================== */
+
+@media (min-width: 641px) and (max-width: 860px) {
+  .audit-table thead th,
+  .audit-table tbody td {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .audit-details {
+    min-width: 180px;
+  }
 }
 
-/* ---------------------------------------------------------------
-   Accessibility & responsiveness
------------------------------------------------------------------- */
-.audit-table tbody tr:focus-within {
-  outline: 2px solid var(--al-accent);
-  outline-offset: -2px;
+/* ==========================================================================
+   Phones (iPhone + Android): each entry becomes a card
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .audit-header {
+    margin-bottom: 18px;
+  }
+
+  .audit-card {
+    padding: 12px;
+    overflow-x: visible;
+    border-radius: 16px;
+  }
+
+  .audit-empty {
+    margin: 0;
+    padding: 36px 14px;
+  }
+
+  .audit-table,
+  .audit-table tbody,
+  .audit-table tr,
+  .audit-table td {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* keep the headers for screen readers */
+  .audit-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .audit-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'action when'
+      'actor  actor'
+      'target target'
+      'details details';
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 4px 14px 12px;
+    background: #fff;
+    border: 1px solid var(--au-line-strong);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(18, 24, 31, 0.05);
+  }
+
+  .audit-table tbody tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .audit-table tbody td,
+  .audit-table tbody tr:last-child td {
+    padding: 9px 0;
+    border-bottom: 0;
+  }
+
+  /* top row: what happened, and when */
+  .audit-table tbody td:nth-child(3) {
+    grid-area: action;
+    padding: 12px 10px 12px 0;
+    border-bottom: 1px solid var(--au-line);
+  }
+
+  .audit-table tbody td:nth-child(1) {
+    grid-area: when;
+    padding: 12px 0;
+    font-size: 0.74rem;
+    text-align: right;
+    white-space: normal;
+    border-bottom: 1px solid var(--au-line);
+  }
+
+  .audit-table tbody td:nth-child(2) { grid-area: actor; }
+  .audit-table tbody td:nth-child(4) { grid-area: target; }
+
+  /* label : value rows */
+  .audit-table tbody td:nth-child(2),
+  .audit-table tbody td:nth-child(4) {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    text-align: right;
+  }
+
+  .audit-table tbody td:nth-child(2)::before,
+  .audit-table tbody td:nth-child(4)::before,
+  .audit-table tbody td:nth-child(5)::before {
+    flex-shrink: 0;
+    font-family: var(--au-font-body);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--au-muted);
+    text-align: left;
+  }
+
+  .audit-table tbody td:nth-child(2)::before { content: 'Actor'; }
+  .audit-table tbody td:nth-child(4)::before { content: 'Target'; }
+
+  /* details: its own scrollable block, never wider than the screen */
+  .audit-details {
+    grid-area: details;
+    max-width: none;
+    max-height: 9.5rem;
+    margin-top: 4px;
+    padding: 10px 12px !important;
+    overflow: auto;
+    background: var(--au-field);
+    border-radius: 10px;
+    overscroll-behavior: contain;
+  }
+
+  .audit-table tbody td:nth-child(5)::before {
+    content: 'Details';
+    display: block;
+    margin-bottom: 4px;
+  }
 }
+
+/* ---------- Reduced motion ------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {
+  .audit-card {
+    animation: none;
+  }
+
   .audit-table tbody tr {
     transition: none;
-  }
-}
-
-@media (max-width: 720px) {
-  .audit-card {
-    margin: 1.5rem 1rem 2rem;
-    border-radius: 8px;
-    overflow-x: auto;
-  }
-
-  .audit-table {
-    min-width: 640px;
   }
 }

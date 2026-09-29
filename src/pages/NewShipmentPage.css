@@ -1,324 +1,581 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+/* ==========================================================================
+   NewShipmentPage.css  (Waystone)
+
+   A long form made easy to finish:
+   - Five numbered section cards (the form really is a sequence). The card
+     you are typing in lifts and gets a teal edge, so you never lose your place.
+   - "Create Shipment" sticks to the bottom of the screen while you scroll.
+   - Inputs are 16px on phones so iOS Safari never zooms when you tap one.
+   - Phones: single column, state + zip side by side, stopovers as stacked cards.
+   - Tablets and landscape: two-column grids and a four-column address row.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
 
 :root {
-  --ws-ink: #12181f;
-  --ws-ink-soft: #3d4552;
-  --ws-paper: #f3f5f8;
-  --ws-card: #ffffff;
+  --ns-ink: #12181f;
+  --ns-ink-soft: #3d4552;
+  --ns-muted: #6b7686;
+  --ns-card: #ffffff;
+  --ns-field: #f4f7f8;
+  --ns-line: #dbe1e8;
+  --ns-line-soft: #eceff3;
 
-  --ws-slate-50: #f6f8fa;
-  --ws-slate-100: #eceff3;
-  --ws-slate-200: #dbe1e8;
-  --ws-slate-300: #c2cad4;
-  --ws-slate-400: #98a3b1;
-  --ws-slate-600: #5c6675;
+  --ns-teal: #0e9488;
+  --ns-teal-deep: #0b7d73;
+  --ns-teal-tint: #e6f7f6;
+  --ns-amber: #d99a00;
+  --ns-red: #b13a32;
+  --ns-red-tint: #fdf1f0;
+  --ns-red-line: #fbdedb;
 
-  --ws-blue-50: #ecf1ff;
-  --ws-blue-600: #2a55e0;
-  --ws-blue-700: #1f3fb0;
-
-  --ws-red-100: #fbdedb;
-  --ws-red-600: #b13a32;
-
-  --ws-font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
-  --ws-font-body: 'Inter', 'Segoe UI', sans-serif;
-
-  --ws-radius-card: 12px;
-  --ws-radius-input: 8px;
-  --ws-shadow-card: 0 1px 2px rgba(18, 24, 31, 0.04), 0 8px 24px -12px rgba(18, 24, 31, 0.1);
+  --ns-font-display: var(--ws-font-display, 'Space Grotesk', 'Segoe UI', sans-serif);
+  --ns-font-body: var(--ws-font-body, 'Inter', 'Segoe UI', system-ui, sans-serif);
+  --ns-font-mono: var(--ws-font-mono, 'JetBrains Mono', ui-monospace, monospace);
+  --ns-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-* { box-sizing: border-box; }
+/* ---------- Header ------------------------------------------------------- */
 
 .new-shipment-header {
-  margin-bottom: 24px;
-  font-family: var(--ws-font-body);
+  max-width: 980px;
+  margin-bottom: 28px;
+  font-family: var(--ns-font-body);
 }
 
 .new-shipment-title {
   margin: 0 0 6px;
-  font-family: var(--ws-font-display);
-  font-size: 24px;
+  font-family: var(--ns-font-display);
+  font-size: clamp(1.6rem, 3.4vw, 2rem);
   font-weight: 700;
-  color: var(--ws-ink);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ns-ink);
+}
+
+.new-shipment-title::after {
+  content: '';
+  display: block;
+  width: 56px;
+  height: 4px;
+  margin-top: 12px;
+  background: linear-gradient(90deg, var(--ns-teal), var(--ns-amber));
+  border-radius: 4px;
 }
 
 .new-shipment-subtitle {
   margin: 0;
-  font-size: 14px;
-  color: var(--ws-slate-600);
+  font-size: 0.96rem;
+  line-height: 1.5;
+  color: var(--ns-muted);
 }
 
+/* ---------- Error -------------------------------------------------------- */
+
 .new-shipment-error {
+  max-width: 980px;
   margin: 0 0 20px;
-  padding: 10px 14px;
-  font-family: var(--ws-font-body);
-  font-size: 13px;
+  padding: 14px 18px;
+  font-family: var(--ns-font-body);
+  font-size: 0.94rem;
   font-weight: 500;
-  color: var(--ws-red-600);
-  background: var(--ws-red-100);
-  border-radius: var(--ws-radius-input);
+  line-height: 1.5;
+  color: var(--ns-red);
+  background: var(--ns-red-tint);
+  border: 1px solid var(--ns-red-line);
+  border-left: 4px solid var(--ns-red);
+  border-radius: 12px;
+  animation: ns-nudge 0.45s var(--ns-ease);
 }
+
+@keyframes ns-nudge {
+  0%   { transform: translateX(0); }
+  25%  { transform: translateX(-6px); }
+  55%  { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
+/* ---------- Form + section cards ---------------------------------------- */
 
 .new-shipment-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  font-family: var(--ws-font-body);
+  max-width: 980px;
+  font-family: var(--ns-font-body);
+  counter-reset: ns-step;
 }
 
 .form-section {
-  padding: 24px;
-  background: var(--ws-card);
-  border: 1px solid var(--ws-slate-100);
-  border-radius: var(--ws-radius-card);
-  box-shadow: var(--ws-shadow-card);
-  transition: border-color 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+  padding: 28px;
+  counter-increment: ns-step;
+  background: var(--ns-card);
+  border: 1px solid var(--ns-line-soft);
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(18, 24, 31, 0.04), 0 12px 28px -18px rgba(18, 24, 31, 0.16);
+  transition: border-color 0.2s ease, box-shadow 0.25s var(--ns-ease);
 }
 
+/* the section you are working in */
 .form-section:focus-within {
-  border-color: var(--ws-blue-600);
+  border-color: #b7e3dd;
+  box-shadow:
+    0 0 0 4px rgba(14, 148, 136, 0.1),
+    0 18px 36px -20px rgba(14, 148, 136, 0.35);
 }
 
 .form-section-title {
-  margin: 0 0 18px;
-  padding-left: 14px;
-  position: relative;
-  font-family: var(--ws-font-display);
-  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-family: var(--ns-font-display);
+  font-size: 1.15rem;
   font-weight: 700;
-  color: var(--ws-ink);
+  letter-spacing: -0.01em;
+  color: var(--ns-ink);
 }
 
 .form-section-title::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 2px;
-  bottom: 2px;
-  width: 3px;
-  border-radius: 2px;
-  background: var(--ws-blue-600);
+  content: counter(ns-step);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  font-family: var(--ns-font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ns-teal-deep);
+  background: var(--ns-teal-tint);
+  border-radius: 50%;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.form-section:focus-within .form-section-title::before {
+  color: #fff;
+  background: var(--ns-teal);
 }
 
 .form-section-hint {
-  margin: -8px 0 16px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--ws-slate-600);
+  max-width: 62ch;
+  margin: -6px 0 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--ns-muted);
 }
+
+/* ---------- Grids -------------------------------------------------------- */
 
 .form-grid {
   display: grid;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 16px 18px;
 }
 
-.form-grid:last-child { margin-bottom: 0; }
+.form-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.form-grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
-.form-grid--2 { grid-template-columns: repeat(2, 1fr); }
-.form-grid--4 { grid-template-columns: repeat(4, 1fr); }
+/* ---------- Labels + inputs --------------------------------------------- */
 
-.form-label {
-  display: block;
-  font-size: 12px;
+.new-shipment-form .form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  font-size: 0.86rem;
   font-weight: 600;
-  color: var(--ws-slate-600);
+  line-height: 1.3;
+  color: var(--ns-ink-soft);
 }
 
-.form-input {
+.new-shipment-form .form-input {
   display: block;
   width: 100%;
-  margin-top: 6px;
-  padding: 10px 12px;
-  font-family: var(--ws-font-body);
-  font-size: 14px;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px 14px;
+  font-family: var(--ns-font-body);
+  font-size: 0.96rem;
   font-weight: 400;
-  color: var(--ws-ink);
-  background: var(--ws-slate-50);
-  border: 1px solid var(--ws-slate-200);
-  border-radius: var(--ws-radius-input);
-  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  line-height: 1.4;
+  color: var(--ns-ink);
+  background-color: var(--ns-field);
+  border: 1.5px solid var(--ns-line);
+  border-radius: 12px;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
 }
 
-.form-input:hover {
-  border-color: var(--ws-slate-300);
+.new-shipment-form .form-input::placeholder {
+  color: #93a0b0;
 }
 
-.form-input:focus {
+.new-shipment-form .form-input:hover {
+  border-color: #b9c3cf;
+}
+
+.new-shipment-form .form-input:focus {
   outline: none;
-  border-color: var(--ws-blue-600);
-  background: #fff;
-  box-shadow: 0 0 0 3px var(--ws-blue-50);
+  background-color: #fff;
+  border-color: var(--ns-teal);
+  box-shadow: 0 0 0 4px rgba(14, 148, 136, 0.16);
 }
 
-select.form-input {
+/* only flag a field after the person has touched it */
+@supports selector(:user-invalid) {
+  .new-shipment-form .form-input:user-invalid {
+    border-color: var(--ns-red);
+    background-color: var(--ns-red-tint);
+  }
+
+  .new-shipment-form .form-input:user-invalid:focus {
+    box-shadow: 0 0 0 4px rgba(177, 58, 50, 0.14);
+  }
+}
+
+/* Chrome / Android autofill keeps the field colour */
+.new-shipment-form .form-input:-webkit-autofill {
+  -webkit-text-fill-color: var(--ns-ink);
+  box-shadow: 0 0 0 100px var(--ns-field) inset;
+}
+
+/* selects get a custom chevron */
+.new-shipment-form select.form-input {
+  padding-right: 44px;
+  text-transform: capitalize;
   cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9' fill='none'%3E%3Cpath d='M1 1.5l6 6 6-6' stroke='%235c6675' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
 }
 
-/* ---------------------------------------------------------------
-   Waypoints
-   ----------------------------------------------------------------*/
+/* iOS Safari draws date inputs short and centred */
+.new-shipment-form input[type='date'] {
+  text-align: left;
+  min-height: 48px;
+}
+
+.new-shipment-form input[type='date']::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+.new-shipment-form input[type='number'] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Stopovers ---------------------------------------------------- */
+
 .waypoint-row {
+  position: relative;
   display: grid;
-  grid-template-columns: 1fr 1fr 100px 36px;
-  gap: 10px;
-  margin-bottom: 10px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 0.8fr) auto;
+  gap: 12px;
   align-items: center;
+  margin-top: 8px;
+  padding: 22px 16px 16px;
+  counter-increment: ns-stop;
+  background: var(--ns-field);
+  border: 1px solid var(--ns-line-soft);
+  border-radius: 16px;
+  animation: ns-pop 0.32s var(--ns-ease);
+}
+
+.form-section:has(.waypoint-row) {
+  counter-reset: ns-stop;
+}
+
+/* small pill sitting on the card's top edge: "Stop 1" */
+.waypoint-row::before {
+  content: 'Stop ' counter(ns-stop);
+  position: absolute;
+  top: -11px;
+  left: 16px;
+  padding: 3px 11px;
+  font-family: var(--ns-font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--ns-teal-deep);
+  background: var(--ns-teal-tint);
+  border: 1px solid #b7e3dd;
+  border-radius: 999px;
+}
+
+@keyframes ns-pop {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
 }
 
 .waypoint-row .form-input {
-  margin-top: 0;
+  background-color: #fff;
+}
+
+.waypoint-remove,
+.waypoint-add,
+.new-shipment-submit {
+  font-family: var(--ns-font-body);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.waypoint-remove:focus-visible,
+.waypoint-add:focus-visible,
+.new-shipment-submit:focus-visible {
+  outline: 3px solid var(--ns-amber);
+  outline-offset: 3px;
 }
 
 .waypoint-remove {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  font-size: 13px;
-  color: var(--ws-slate-400);
-  background: var(--ws-slate-50);
-  border: 1px solid var(--ws-slate-200);
-  border-radius: var(--ws-radius-input);
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  font-size: 1rem;
+  color: var(--ns-muted);
+  background: #fff;
+  border: 1.5px solid var(--ns-line);
+  border-radius: 12px;
+  transition: color 0.16s ease, background-color 0.16s ease, border-color 0.16s ease, transform 0.12s ease;
 }
 
-.waypoint-remove:hover {
-  color: var(--ws-red-600);
-  border-color: var(--ws-red-100);
-  background: var(--ws-red-100);
+.waypoint-remove:active {
+  color: var(--ns-red);
+  background: var(--ns-red-tint);
+  border-color: var(--ns-red);
+  transform: scale(0.94);
 }
 
 .waypoint-add {
-  padding: 10px 16px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ws-blue-700);
-  background: var(--ws-blue-50);
-  border: 1px dashed #b7c8ff;
-  border-radius: var(--ws-radius-input);
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.waypoint-add:hover {
-  background: #e0e9ff;
-  border-color: var(--ws-blue-600);
-}
-
-/* ---------------------------------------------------------------
-   Submit
-   ----------------------------------------------------------------*/
-.new-shipment-submit {
-  align-self: flex-end;
-  padding: 13px 28px;
-  font-family: var(--ws-font-body);
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  margin-top: 4px;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #fff;
-  background: var(--ws-blue-600);
-  border: none;
-  border-radius: var(--ws-radius-input);
-  cursor: pointer;
-  box-shadow: 0 10px 24px -10px rgba(42, 85, 224, 0.55);
-  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+  color: var(--ns-teal-deep);
+  background: transparent;
+  border: 2px dashed #9fd8d0;
+  border-radius: 14px;
+  transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
 }
 
-.new-shipment-submit:hover:not(:disabled) {
-  background: var(--ws-blue-700);
-  box-shadow: 0 12px 28px -8px rgba(42, 85, 224, 0.6);
+.waypoint-add:active {
+  background: var(--ns-teal-tint);
+  border-color: var(--ns-teal);
+  transform: scale(0.99);
+}
+
+/* ---------- Submit: stays in reach while you scroll ---------------------- */
+
+.new-shipment-submit {
+  position: sticky;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  z-index: 10;
+  align-self: flex-end;
+  min-width: 260px;
+  min-height: 56px;
+  padding: 0 32px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.005em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ns-teal), var(--ns-teal-deep));
+  border: 0;
+  border-radius: 16px;
+  box-shadow: 0 16px 30px -12px rgba(14, 148, 136, 0.95), 0 2px 6px rgba(18, 24, 31, 0.16);
+  transition: transform 0.18s var(--ns-ease), box-shadow 0.18s var(--ns-ease), opacity 0.2s ease;
 }
 
 .new-shipment-submit:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: scale(0.98);
 }
 
 .new-shipment-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  box-shadow: none;
+  cursor: progress;
+  opacity: 0.85;
+  background-image: linear-gradient(110deg, var(--ns-teal) 30%, #35c2ae 50%, var(--ns-teal) 70%);
+  background-size: 200% 100%;
+  animation: ns-shimmer 1.2s linear infinite;
 }
 
-@media (max-width: 720px) {
-  .form-grid--2,
+@keyframes ns-shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ---------- Pointer devices only ---------------------------------------- */
+
+@media (hover: hover) and (pointer: fine) {
+  .waypoint-remove:hover {
+    color: var(--ns-red);
+    background: var(--ns-red-tint);
+    border-color: var(--ns-red);
+  }
+
+  .waypoint-add:hover {
+    background: var(--ns-teal-tint);
+    border-color: var(--ns-teal);
+  }
+
+  .new-shipment-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 36px -14px rgba(14, 148, 136, 1), 0 2px 6px rgba(18, 24, 31, 0.16);
+  }
+}
+
+/* ==========================================================================
+   Tablet portrait (641px to 860px)
+   ========================================================================== */
+
+@media (min-width: 641px) and (max-width: 860px) {
+  .new-shipment-form {
+    gap: 18px;
+  }
+
+  .form-section {
+    padding: 24px 22px;
+    border-radius: 18px;
+  }
+
+  .form-grid {
+    gap: 14px;
+  }
+}
+
+/* ==========================================================================
+   Phones (iPhone + Android): up to 640px
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .new-shipment-header {
+    margin-bottom: 20px;
+  }
+
+  .new-shipment-form {
+    gap: 14px;
+  }
+
+  .form-section {
+    gap: 16px;
+    padding: 20px 16px;
+    border-radius: 18px;
+  }
+
+  .form-section-title {
+    font-size: 1.08rem;
+  }
+
+  .form-section-hint {
+    font-size: 0.9rem;
+  }
+
+  /* one column, except state + zip which sit together */
+  .form-grid--2 {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
   .form-grid--4 {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
   }
-  .waypoint-row {
-    grid-template-columns: 1fr 1fr;
-  }
-  .waypoint-remove {
-    grid-column: span 2;
-    justify-self: end;
-  }
-  .new-shipment-submit {
-    align-self: stretch;
-    text-align: center;
-  }
-}
 
-/* ===============================================================
-   RESPONSIVE LAYER NewShipmentPage.css
-   =============================================================== */
-
-html { -webkit-text-size-adjust: 100%; }
-
-input[type='date'].form-input {
-  -webkit-appearance: none;
-  appearance: none;                           /* consistent height on iOS */
-  min-height: 42px;
-}
-
-/* Tablet: 4-col address row becomes 2 cols */
-@media (max-width: 1024px) {
-  .form-grid--4 { grid-template-columns: repeat(2, 1fr); }
-  /* Country label has inline "span 2" — make it a full row instead */
-  .form-grid--4 > .form-label[style] { grid-column: 1 / -1 !important; }
-}
-
-/* Phones */
-@media (max-width: 720px) {
-  .new-shipment-title { font-size: 22px; }
-
-  .form-section { padding: 18px 16px; }
-  .form-grid { gap: 14px; }
-  .form-grid--2,
-  .form-grid--4 { grid-template-columns: 1fr; }
-
-  .form-input {
-    min-height: 46px;
-    font-size: 16px;                          /* stops iOS zoom-on-focus */
-  }
-  textarea.form-input { min-height: 96px; }
-
-  /* Stopover rows become tidy mini-cards */
-  .waypoint-row {
-    grid-template-columns: 1fr 1fr;
-    padding: 12px;
-    background: var(--ws-slate-50);
-    border: 1px solid var(--ws-slate-200);
-    border-radius: 10px;
-  }
-  .waypoint-row > .form-input:first-child { grid-column: 1 / -1; }
-  .waypoint-remove {
-    grid-column: 1 / -1;
-    justify-self: end;
-    width: auto;
-    height: 40px;
-    padding: 0 16px;
-  }
-  .waypoint-add { width: 100%; min-height: 46px; }
-
-  /* Submit stays reachable while scrolling a long form */
-  .new-shipment-submit {
-    position: sticky;
-    bottom: max(12px, env(safe-area-inset-bottom));
-    z-index: 5;
-    align-self: stretch;
+  /* 16px stops iOS Safari zooming the page on focus */
+  .new-shipment-form .form-input {
     min-height: 52px;
-    font-size: 15px;
+    font-size: 16px;
+    border-radius: 14px;
+  }
+
+  .new-shipment-form .form-label {
+    font-size: 0.88rem;
+  }
+
+  /* stopover: stacked card */
+  .waypoint-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 24px 14px 14px;
+  }
+
+  .waypoint-row > .form-input:nth-child(1) {
+    grid-column: 1 / -1;
+  }
+
+  .waypoint-row > .waypoint-remove {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 48px;
+    font-size: 0; /* hide the bare "x", show a clear word instead */
+  }
+
+  .waypoint-row > .waypoint-remove::after {
+    content: 'Remove stopover';
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  /* full-width action bar at the thumb */
+  .new-shipment-submit {
+    align-self: stretch;
+    min-width: 0;
+    min-height: 58px;
+    border-radius: 18px;
+  }
+}
+
+/* Very narrow screens: everything single column */
+@media (max-width: 359px) {
+  .form-grid--4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* the Country label carries an inline "span 2"; keep it from adding a column */
+  .form-grid--4 > .form-label {
+    grid-column: auto !important;
+  }
+
+  .waypoint-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .waypoint-row > .form-input:nth-child(1) {
+    grid-column: auto;
+  }
+
+  .waypoint-row > .waypoint-remove {
+    grid-column: auto;
+  }
+}
+
+/* Short landscape screens: don't let the sticky button eat the view */
+@media (max-height: 480px) and (orientation: landscape) {
+  .new-shipment-submit {
+    min-height: 48px;
+  }
+}
+
+/* ---------- Reduced motion ------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .new-shipment-error,
+  .waypoint-row,
+  .new-shipment-submit:disabled {
+    animation: none;
+  }
+
+  .form-section,
+  .new-shipment-form .form-input,
+  .waypoint-remove,
+  .waypoint-add,
+  .new-shipment-submit {
+    transition: none;
   }
 }
