@@ -14,8 +14,8 @@ export function getShipmentByToken(token) {
   return request(`/track/${token}`);
 }
 
-export function getShipmentByNumber(trackingNumber, lastName) {
-  return request(`/track/number/${trackingNumber}?lastName=${encodeURIComponent(lastName)}`);
+export function getShipmentByNumber(trackingNumber) {
+  return request(`/track/number/${trackingNumber}`);
 }
 
 export function subscribeToUpdates(token, channel, contact) {

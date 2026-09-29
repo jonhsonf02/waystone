@@ -72,7 +72,6 @@ function RouteVisual() {
 function HomePage() {
   const { user } = useAuth();
   const [trackingNumber, setTrackingNumber] = useState('');
-  const [lastName, setLastName] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -85,7 +84,7 @@ function HomePage() {
     setError(null);
     setLoading(true);
     try {
-      const res = await getShipmentByNumber(trackingNumber.trim(), lastName.trim());
+      const res = await getShipmentByNumber(trackingNumber.trim());
       window.location.href = `/track/${res.shipment.trackingLinkToken}`;
     } catch (err) {
       setError(err.message);
@@ -129,13 +128,6 @@ function HomePage() {
                 placeholder="Tracking number (e.g. WS-8851948764US)"
                 value={trackingNumber}
                 onChange={(e) => setTrackingNumber(e.target.value)}
-                required
-              />
-              <input
-                className="home-search-input"
-                placeholder="Recipient last name"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
                 required
               />
               <button type="submit" className="home-search-btn" disabled={loading}>
