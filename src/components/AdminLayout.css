@@ -493,3 +493,31 @@ img.admin-sidebar-mark {
     transition: none;
   }
 }
+
+/* ---------- Brand mark as a link back to the homepage -------------------- */
+
+.admin-topbar-brand,
+.admin-sidebar-brand-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.admin-sidebar-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .admin-topbar-brand:hover,
+  .admin-sidebar-brand-link:hover {
+    opacity: 0.88;
+  }
+}
+
+.admin-topbar-brand:active,
+.admin-sidebar-brand-link:active {
+  opacity: 0.75;
+}

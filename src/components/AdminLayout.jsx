@@ -40,10 +40,10 @@ function AdminLayout({ children }) {
   return (
     <div className="admin-layout">
       <header className="admin-topbar">
-        <div className="admin-topbar-brand">
+        <Link to="/" className="admin-topbar-brand">
           <img src="/images/waystone.png" alt="Waystone" className="admin-topbar-mark" />
           <span>Waystone</span>
-        </div>
+        </Link>
         <button
           type="button"
           className="admin-topbar-menu"
@@ -66,8 +66,10 @@ function AdminLayout({ children }) {
 
       <aside id="admin-sidebar" className={`admin-sidebar ${menuOpen ? 'admin-sidebar--open' : ''}`}>
         <div className="admin-sidebar-brand">
-          <img src="/images/waystone.png" alt="Waystone" className="admin-sidebar-mark" />
-          <span>Waystone</span>
+          <Link to="/" className="admin-sidebar-brand-link">
+            <img src="/images/waystone.png" alt="Waystone" className="admin-sidebar-mark" />
+            <span>Waystone</span>
+          </Link>
           <button
             type="button"
             className="admin-sidebar-close"
@@ -92,6 +94,9 @@ function AdminLayout({ children }) {
               Audit Log
             </Link>
           )}
+          <Link to="/" className="admin-sidebar-link">
+            View Site
+          </Link>
         </nav>
         <div className="admin-sidebar-footer">
           <div className="admin-sidebar-user">

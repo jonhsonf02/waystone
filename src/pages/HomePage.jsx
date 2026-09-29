@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getShipmentByNumber } from '../api/client.js';
 import { useInView } from '../hooks/useInView.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import './HomePage.css';
 
 const STEPS = [
@@ -68,11 +70,11 @@ function RouteVisual() {
 }
 
 function HomePage() {
+  const { user } = useAuth();
   const [trackingNumber, setTrackingNumber] = useState('');
   const [lastName, setLastName] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
 
   const [stepsRef, stepsInView] = useInView();
   const [featuresRef, featuresInView] = useInView();
@@ -81,7 +83,6 @@ function HomePage() {
   async function handleSearch(e) {
     e.preventDefault();
     setError(null);
-    setResult(null);
     setLoading(true);
     try {
       const res = await getShipmentByNumber(trackingNumber.trim(), lastName.trim());
@@ -96,15 +97,19 @@ function HomePage() {
   return (
     <div className="home-page">
       <header className="home-nav">
-        <div className="home-nav-brand">
+        <Link to="/" className="home-nav-brand">
           <img src="/images/waystone.png" alt="Waystone" className="home-nav-mark" />
           <span>Waystone</span>
-        </div>
+        </Link>
         <nav className="home-nav-links">
           <a href="#how-it-works">How It Works</a>
           <a href="#features">Features</a>
         </nav>
-        <a href="/login" className="home-nav-signin">Staff Sign In</a>
+        {user ? (
+          <Link to="/admin" className="home-nav-signin">Dashboard</Link>
+        ) : (
+          <Link to="/login" className="home-nav-signin">Staff Sign In</Link>
+        )}
       </header>
 
       <section className="home-hero">
@@ -192,17 +197,21 @@ function HomePage() {
             <h2>Manage shipments with confidence</h2>
             <p>Sign in to create shipments, push live updates, and monitor your entire fleet.</p>
           </div>
-          <a href="/login" className="home-cta-btn">Staff Sign In →</a>
+          {user ? (
+            <Link to="/admin" className="home-cta-btn">Go to Dashboard →</Link>
+          ) : (
+            <Link to="/login" className="home-cta-btn">Staff Sign In →</Link>
+          )}
         </div>
       </section>
 
       <footer className="home-footer">
         <div className="home-footer-grid">
           <div className="home-footer-brand">
-            <div className="home-nav-brand">
-              <div className="home-nav-mark">W</div>
+            <Link to="/" className="home-nav-brand">
+              <img src="/images/waystone.png" alt="Waystone" className="home-nav-mark" />
               <span>Waystone</span>
-            </div>
+            </Link>
             <p>Reliable, transparent shipment tracking built for real logistics operations.</p>
           </div>
           <div className="home-footer-col">
@@ -212,7 +221,11 @@ function HomePage() {
           </div>
           <div className="home-footer-col">
             <h4>Company</h4>
-            <a href="/login">Staff Sign In</a>
+            {user ? (
+              <Link to="/admin">Dashboard</Link>
+            ) : (
+              <Link to="/login">Staff Sign In</Link>
+            )}
           </div>
         </div>
         <div className="home-footer-bottom">
