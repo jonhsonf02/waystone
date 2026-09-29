@@ -1,44 +1,242 @@
-.progress-bar { display: flex; align-items: flex-start; padding: 2rem 0; }
+/* ==========================================================================
+   ProgressBar.css
+   Five stops on a rail. Reached stops fill teal with a check, the current
+   stop pulses, and "Delivered" turns amber. Connectors fill in left to
+   right once on load. Below 520px it becomes a vertical stepper.
+   ========================================================================== */
 
-.progress-bar-step { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.progress-bar {
+  --pb-teal: #14b8a0;
+  --pb-teal-deep: #0c7d6c;
+  --pb-amber: #ffb800;
+  --pb-track: #dde6e3;
+  --pb-ink: #0e1b2c;
+  --pb-muted: #8593a3;
+  --pb-red: #d6423f;
+  --pb-paper: #fbfcfb;
+  --pb-mist: #f0f5f3;
+  --pb-dot: 22px;
+
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1.6rem 1rem 1.4rem;
+  font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--pb-ink);
+  background: linear-gradient(180deg, var(--pb-paper), var(--pb-mist));
+  border: 1px solid var(--pb-track);
+  border-radius: 16px;
+}
+
+/* ---------- Step --------------------------------------------------------- */
+
+.progress-bar-step {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  text-align: center;
+}
+
+/* ---------- Dot ---------------------------------------------------------- */
 
 .progress-bar-dot {
-  width: 20px; height: 20px;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  width: var(--pb-dot);
+  height: var(--pb-dot);
+  flex-shrink: 0;
+  background: var(--pb-paper);
+  border: 3px solid var(--pb-track);
   border-radius: 50%;
-  background: var(--ws-slate-200);
-  border: 3px solid var(--ws-white);
-  box-shadow: 0 0 0 2px var(--ws-slate-200);
-  z-index: 1;
-  margin-bottom: 0.65rem;
-  transition: all 0.3s var(--ease-bounce);
+  transition: background-color 0.4s ease, border-color 0.4s ease, transform 0.4s ease;
 }
 
 .progress-bar-dot--reached {
-  background: var(--ws-blue-600);
-  box-shadow: 0 0 0 2px var(--ws-blue-600), 0 0 16px rgba(30, 94, 255, 0.4);
+  background: var(--pb-teal);
+  border-color: var(--pb-teal);
 }
 
-.progress-bar-dot--exception { background: var(--ws-red-600); box-shadow: 0 0 0 2px var(--ws-red-600); }
+/* check mark */
+.progress-bar-dot--reached::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
 
-.progress-bar-label { font-size: 0.8rem; font-weight: 600; color: var(--ws-slate-500); }
+/* the current stop: the last reached dot that is not the final one */
+.progress-bar-step:not(:last-of-type):not(:has(+ .progress-bar-step .progress-bar-dot--reached))
+  .progress-bar-dot--reached {
+  transform: scale(1.18);
+  animation: pb-pulse 2s ease-out infinite;
+}
+
+@keyframes pb-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(20, 184, 160, 0.55); }
+  70%  { box-shadow: 0 0 0 11px rgba(20, 184, 160, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(20, 184, 160, 0); }
+}
+
+/* delivered */
+.progress-bar-step:last-of-type .progress-bar-dot--reached {
+  background: var(--pb-amber);
+  border-color: var(--pb-amber);
+  box-shadow: 0 0 0 5px rgba(255, 184, 0, 0.25);
+  transform: scale(1.18);
+}
+
+.progress-bar-step:last-of-type .progress-bar-dot--reached::after {
+  border-color: #2b1f00;
+}
+
+/* exception / on hold */
+.progress-bar-dot--exception {
+  background: #fff;
+  border: 3px dashed #eab4b3;
+}
+
+/* ---------- Label -------------------------------------------------------- */
+
+.progress-bar-label {
+  padding: 0 0.15rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--pb-muted);
+  transition: color 0.3s ease;
+}
+
+.progress-bar-dot--reached + .progress-bar-label {
+  font-weight: 700;
+  color: var(--pb-ink);
+}
+
+/* ---------- Connector ---------------------------------------------------- */
 
 .progress-bar-line {
   position: absolute;
-  top: 9px;
-  left: 50%;
-  width: 100%;
-  height: 3px;
-  background: var(--ws-slate-200);
-  border-radius: 2px;
+  z-index: 1;
+  top: calc((var(--pb-dot) - 4px) / 2);
+  left: calc(50% + var(--pb-dot) / 2 + 5px);
+  right: calc(-50% + var(--pb-dot) / 2 + 5px);
+  height: 4px;
+  overflow: hidden;
+  background: var(--pb-track);
+  border-radius: 4px;
 }
 
-.progress-bar-line--reached { background: linear-gradient(90deg, var(--ws-blue-600), var(--ws-blue-500)); }
+.progress-bar-line--reached::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, var(--pb-teal), var(--pb-teal-deep));
+  border-radius: 4px;
+  transform-origin: left;
+  animation: pb-fill 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* stagger so the rail fills like a sequence */
+.progress-bar-step:nth-child(2) .progress-bar-line--reached::after { animation-delay: 0.15s; }
+.progress-bar-step:nth-child(3) .progress-bar-line--reached::after { animation-delay: 0.3s; }
+.progress-bar-step:nth-child(4) .progress-bar-line--reached::after { animation-delay: 0.45s; }
+
+/* the final leg leads to "Delivered": teal turns amber */
+.progress-bar-step:nth-last-child(2) .progress-bar-line--reached::after {
+  background: linear-gradient(90deg, var(--pb-teal), var(--pb-amber));
+}
+
+@keyframes pb-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes pb-fill-y {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+/* ---------- Exception note ---------------------------------------------- */
 
 .progress-bar-exception-note {
-  width: 100%;
-  margin-top: 1.25rem;
-  color: var(--ws-red-600);
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-align: center;
+  flex: 1 1 100%;
+  margin: 1.3rem 0 0;
+  padding: 0.9rem 1.1rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #8f2523;
+  background: #fdeceb;
+  border-left: 4px solid var(--pb-red);
+  border-radius: 10px;
+}
+
+/* ---------- Small screens: vertical stepper ----------------------------- */
+
+@media (max-width: 520px) {
+  .progress-bar {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    padding: 1.3rem 1.25rem;
+  }
+
+  .progress-bar-step {
+    flex: none;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.95rem;
+    min-height: 3.4rem;
+    text-align: left;
+  }
+
+  .progress-bar-step:last-of-type {
+    min-height: 0;
+  }
+
+  .progress-bar-label {
+    padding: 0.1rem 0 0;
+    font-size: 0.95rem;
+  }
+
+  .progress-bar-line {
+    top: calc(var(--pb-dot) + 4px);
+    bottom: 4px;
+    left: calc(var(--pb-dot) / 2 - 2px);
+    right: auto;
+    width: 4px;
+    height: auto;
+  }
+
+  .progress-bar-line--reached::after {
+    transform-origin: top;
+    background: linear-gradient(180deg, var(--pb-teal), var(--pb-teal-deep));
+    animation-name: pb-fill-y;
+  }
+
+  .progress-bar-step:nth-last-child(2) .progress-bar-line--reached::after {
+    background: linear-gradient(180deg, var(--pb-teal), var(--pb-amber));
+  }
+
+  .progress-bar-exception-note {
+    flex: none;
+  }
+}
+
+/* ---------- Reduced motion ---------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar *,
+  .progress-bar *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

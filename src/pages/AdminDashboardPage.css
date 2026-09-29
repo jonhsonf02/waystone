@@ -1,4 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap');
+/* ==========================================================================
+   AdminDashboardPage.css  (Waystone)
+
+   Colour carries meaning on this page, and matches the tracking pages:
+     slate = all shipments, teal = moving, amber = delivered, red = needs help.
+
+   Layouts
+   - Desktop / iPad landscape: 4 stat cards in a row + a full data table.
+   - Tablet portrait (641-860px): same layout, tightened for the width.
+   - Phones (up to 640px): 2x2 stats, each shipment becomes a card, and
+     "New Shipment" floats at the thumb, clear of the home bar.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap');
 
 :root {
   --ws-ink: #12181f;
@@ -17,6 +30,9 @@
   --ws-teal-500: #0e9488;
   --ws-teal-600: #0b7d73;
 
+  --ws-amber-600: #d99a00;
+
+  --ws-red-50: #fdf1f0;
   --ws-red-100: #fbdedb;
   --ws-red-600: #b13a32;
 
@@ -24,95 +40,124 @@
   --ws-font-body: 'Inter', 'Segoe UI', sans-serif;
   --ws-font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  --ws-radius-card: 12px;
-  --ws-shadow-card: 0 1px 2px rgba(18, 24, 31, 0.04), 0 8px 24px -12px rgba(18, 24, 31, 0.1);
+  --ws-radius-card: 16px;
+  --ws-shadow-card: 0 1px 2px rgba(18, 24, 31, 0.04), 0 10px 28px -14px rgba(18, 24, 31, 0.14);
+  --ws-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * { box-sizing: border-box; }
 
+/* ---------- Header ------------------------------------------------------- */
+
 .dashboard-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 20px;
   flex-wrap: wrap;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   font-family: var(--ws-font-body);
 }
 
 .dashboard-title {
   margin: 0 0 4px;
   font-family: var(--ws-font-display);
-  font-size: 24px;
+  font-size: clamp(1.6rem, 3.4vw, 2rem);
   font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
   color: var(--ws-ink);
 }
 
 .dashboard-subtitle {
   margin: 0;
-  font-size: 14px;
+  font-size: 0.95rem;
   color: var(--ws-slate-600);
 }
 
 .dashboard-cta {
-  padding: 10px 18px;
-  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 22px;
+  font-family: var(--ws-font-body);
+  font-size: 0.92rem;
   font-weight: 700;
   color: #fff;
-  background: var(--ws-teal-500);
-  border-radius: 8px;
-  transition: background-color 0.15s ease, transform 0.1s ease;
+  text-decoration: none;
+  white-space: nowrap;
+  background: linear-gradient(135deg, var(--ws-teal-500), var(--ws-teal-600));
+  border-radius: 12px;
+  box-shadow: 0 10px 20px -10px rgba(14, 148, 136, 0.9);
+  transition: transform 0.18s var(--ws-ease), box-shadow 0.18s var(--ws-ease);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-.dashboard-cta:hover {
-  background: var(--ws-teal-600);
-  transform: translateY(-1px);
+.dashboard-cta:active {
+  transform: scale(0.97);
 }
 
-/* ---------------------------------------------------------------
-   Stat cards
-   ----------------------------------------------------------------*/
+.dashboard-cta:focus-visible {
+  outline: 3px solid var(--ws-amber-600);
+  outline-offset: 3px;
+}
+
+/* ---------- Stat cards --------------------------------------------------- */
+
 .dashboard-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
   font-family: var(--ws-font-body);
 }
 
 .dashboard-stat-card {
+  --stat: #26364f;
+
   position: relative;
   min-width: 0;
-  padding: 20px 22px;
+  padding: 22px 24px 22px 26px;
+  overflow: hidden;
   background: var(--ws-card);
   border: 1px solid var(--ws-slate-100);
   border-radius: var(--ws-radius-card);
   box-shadow: var(--ws-shadow-card);
-  overflow: hidden;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.2s var(--ws-ease), box-shadow 0.2s var(--ws-ease);
+  animation: ws-rise 0.6s var(--ws-ease) backwards;
 }
 
+.dashboard-stat-card:nth-child(1) { --stat: #26364f; }
+.dashboard-stat-card:nth-child(2) { --stat: var(--ws-teal-500); animation-delay: 0.07s; }
+.dashboard-stat-card:nth-child(3) { --stat: var(--ws-amber-600); animation-delay: 0.14s; }
+.dashboard-stat-card--warning     { --stat: var(--ws-red-600); animation-delay: 0.21s; }
+
+/* soft colour bloom in the corner */
+@supports (color: color-mix(in srgb, red 10%, transparent)) {
+  .dashboard-stat-card {
+    background:
+      radial-gradient(9rem 7rem at 100% 0%, color-mix(in srgb, var(--stat) 13%, transparent), transparent 70%),
+      var(--ws-card);
+  }
+}
+
+/* status bar on the left edge */
 .dashboard-stat-card::before {
   content: '';
   position: absolute;
-  top: 0; left: 0;
-  width: 3px;
-  height: 100%;
-  background: var(--ws-teal-500);
-}
-
-.dashboard-stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 1px 2px rgba(18, 24, 31, 0.04), 0 16px 32px -14px rgba(18, 24, 31, 0.18);
-}
-
-.dashboard-stat-card--warning::before {
-  background: var(--ws-red-600);
+  top: 18px;
+  bottom: 18px;
+  left: 0;
+  width: 4px;
+  background: var(--stat);
+  border-radius: 0 4px 4px 0;
 }
 
 .dashboard-stat-label {
-  margin: 0 0 8px;
-  font-size: 12px;
+  margin: 0 0 10px;
+  font-size: 0.84rem;
   font-weight: 600;
   color: var(--ws-slate-600);
 }
@@ -120,8 +165,10 @@
 .dashboard-stat-value {
   margin: 0;
   font-family: var(--ws-font-display);
-  font-size: 30px;
+  font-size: clamp(1.9rem, 3.6vw, 2.4rem);
   font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
   color: var(--ws-ink);
   font-variant-numeric: tabular-nums;
 }
@@ -130,116 +177,224 @@
   color: var(--ws-red-600);
 }
 
-/* ---------------------------------------------------------------
-   Table card
-   ----------------------------------------------------------------*/
+@keyframes ws-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---------- Table card --------------------------------------------------- */
+
 .dashboard-table-card {
-  padding: 24px;
+  padding: 26px 26px 14px;
   background: var(--ws-card);
   border: 1px solid var(--ws-slate-100);
   border-radius: var(--ws-radius-card);
   box-shadow: var(--ws-shadow-card);
   font-family: var(--ws-font-body);
+  animation: ws-rise 0.6s var(--ws-ease) 0.28s backwards;
 }
 
 .dashboard-table-title {
-  margin: 0 0 18px;
+  margin: 0 0 14px;
   font-family: var(--ws-font-display);
-  font-size: 16px;
+  font-size: 1.15rem;
   font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--ws-ink);
 }
 
+/* ---------- Empty / loading / error ------------------------------------- */
+
 .dashboard-empty {
-  margin: 0;
-  padding: 32px 0;
+  margin: 0 0 12px;
+  padding: 40px 16px;
   text-align: center;
-  font-size: 14px;
-  color: var(--ws-slate-400);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--ws-slate-600);
+  background: var(--ws-slate-50);
+  border: 1.5px dashed var(--ws-slate-200);
+  border-radius: 12px;
 }
 
 .dashboard-empty--error {
   color: var(--ws-red-600);
+  font-weight: 500;
+  background: var(--ws-red-50);
+  border: 1px solid var(--ws-red-100);
 }
+
+/* ---------- Table (tablet + desktop) ------------------------------------- */
 
 .dashboard-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 0.94rem;
 }
 
 .dashboard-table thead th {
-  padding: 0 12px 12px;
+  padding: 0 14px 12px;
   text-align: left;
-  font-size: 12px;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--ws-slate-600);
-  border-bottom: 1px solid var(--ws-slate-100);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--ws-slate-200);
 }
 
 .dashboard-table tbody tr {
   cursor: pointer;
-  transition: background-color 0.12s ease;
+  transition: background-color 0.14s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.dashboard-table tbody tr:hover {
+.dashboard-table tbody tr:active {
   background: var(--ws-teal-50);
 }
 
 .dashboard-table tbody td {
-  padding: 14px 12px;
-  border-bottom: 1px solid var(--ws-slate-100);
+  padding: 16px 14px;
   color: var(--ws-ink-soft);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--ws-slate-100);
 }
 
 .dashboard-table tbody tr:last-child td {
-  border-bottom: none;
+  border-bottom: 0;
 }
 
 .dashboard-table-tracking {
   font-family: var(--ws-font-mono);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--ws-ink);
+  white-space: nowrap;
 }
 
-@media (max-width: 900px) {
-  .dashboard-stats { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* ---------------------------------------------------------------
-   Phones: stacked header, compact 2x2 stats, table becomes cards
-   ----------------------------------------------------------------*/
-@media (max-width: 640px) {
-  .dashboard-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 14px;
-    margin-bottom: 18px;
+/* pointer devices only: hover with a teal edge */
+@media (hover: hover) and (pointer: fine) {
+  .dashboard-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 26px -12px rgba(14, 148, 136, 0.95);
   }
 
-  .dashboard-title { font-size: 22px; }
+  .dashboard-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 1px 2px rgba(18, 24, 31, 0.04), 0 20px 36px -16px rgba(18, 24, 31, 0.24);
+  }
 
-  .dashboard-cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 12px 18px;
-    font-size: 14px;
-    text-align: center;
+  .dashboard-table tbody tr:hover {
+    background: var(--ws-teal-50);
+  }
+
+  .dashboard-table tbody tr:hover td:first-child {
+    box-shadow: inset 3px 0 0 var(--ws-teal-500);
+  }
+}
+
+/* ==========================================================================
+   Tablet portrait (641px to 860px): tighter, still a real table
+   ========================================================================== */
+
+@media (min-width: 641px) and (max-width: 860px) {
+  .dashboard-header {
+    margin-bottom: 22px;
   }
 
   .dashboard-stats {
-    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .dashboard-stat-card {
+    padding: 18px 16px 18px 20px;
+  }
+
+  .dashboard-stat-value {
+    font-size: 2rem;
+  }
+
+  .dashboard-table-card {
+    padding: 22px 18px 10px;
+  }
+
+  .dashboard-table thead th,
+  .dashboard-table tbody td {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+/* ==========================================================================
+   Phones (iPhone + Android): up to 640px
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .dashboard-header {
+    margin-bottom: 18px;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.9rem;
+  }
+
+  /* New Shipment floats in thumb reach, above the home bar / gesture bar */
+  .dashboard-cta {
+    position: fixed;
+    right: max(16px, env(safe-area-inset-right, 0px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index: 20;
+    min-height: 54px;
+    padding: 0 24px;
+    font-size: 0.98rem;
+    border-radius: 999px;
+    box-shadow: 0 16px 30px -10px rgba(14, 148, 136, 0.85), 0 2px 6px rgba(18, 24, 31, 0.18);
+  }
+
+  /* --- 2 x 2 stats --- */
+  .dashboard-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     margin-bottom: 18px;
   }
 
-  .dashboard-stat-card { padding: 16px 16px 16px 18px; }
-  .dashboard-stat-value { font-size: 26px; }
+  .dashboard-stat-card {
+    padding: 16px 14px 16px 18px;
+    border-radius: 14px;
+  }
 
-  .dashboard-table-card { padding: 16px; }
+  .dashboard-stat-card::before {
+    top: 14px;
+    bottom: 14px;
+  }
+
+  .dashboard-stat-label {
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+  }
+
+  .dashboard-stat-value {
+    font-size: 1.85rem;
+  }
+
+  /* --- shipments as cards --- */
+  .dashboard-table-card {
+    padding: 18px 14px 14px;
+    border-radius: 14px;
+    /* keep the last card clear of the floating button */
+    margin-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .dashboard-table-title {
+    padding: 0 4px;
+    margin-bottom: 14px;
+    font-size: 1.05rem;
+  }
+
+  .dashboard-empty {
+    padding: 32px 14px;
+  }
 
   .dashboard-table,
   .dashboard-table tbody,
@@ -249,50 +404,160 @@
     width: 100%;
   }
 
-  .dashboard-table thead { display: none; }
-
-  .dashboard-table tbody tr {
-    margin-bottom: 12px;
-    padding: 10px 14px;
-    background: var(--ws-card);
-    border: 1px solid var(--ws-slate-100);
-    border-radius: 10px;
-    box-shadow: 0 1px 2px rgba(18, 24, 31, 0.04);
+  /* keep headers for screen readers, hide visually */
+  .dashboard-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
   }
 
-  .dashboard-table tbody tr:last-child { margin-bottom: 0; }
+  .dashboard-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'track  status'
+      'person person'
+      'route  route';
+    margin-bottom: 12px;
+    padding: 4px 16px 6px;
+    background: var(--ws-card);
+    border: 1px solid var(--ws-slate-200);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(18, 24, 31, 0.05);
+    transition: transform 0.12s var(--ws-ease), background-color 0.12s ease;
+  }
+
+  .dashboard-table tbody tr:active {
+    background: var(--ws-teal-50);
+    transform: scale(0.985);
+  }
+
+  .dashboard-table tbody tr:last-child {
+    margin-bottom: 0;
+  }
 
   .dashboard-table tbody td,
   .dashboard-table tbody tr:last-child td {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 8px 0;
-    border-bottom: none;
+    gap: 14px;
+    width: auto;
+    min-width: 0;
+    padding: 10px 0;
     text-align: right;
+    border-bottom: 0;
   }
 
+  /* label on the left, value on the right */
   .dashboard-table tbody td::before {
     content: attr(data-label);
     flex-shrink: 0;
     font-family: var(--ws-font-body);
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 500;
     color: var(--ws-slate-600);
     text-align: left;
   }
 
-  .dashboard-table tbody td.dashboard-table-tracking {
-    padding-bottom: 10px;
-    margin-bottom: 4px;
+  /* header row of the card: tracking number + status badge */
+  .dashboard-table-tracking {
+    grid-area: track;
+    justify-content: flex-start !important;
+    padding: 12px 10px 12px 0 !important;
+    font-size: 0.92rem;
+    border-bottom: 1px solid var(--ws-slate-100) !important;
+  }
+
+  .dashboard-table-tracking::before,
+  .dashboard-table tbody td[data-label='Status']::before {
+    display: none;
+  }
+
+  .dashboard-table tbody td[data-label='Status'] {
+    grid-area: status;
+    justify-content: flex-end;
+    padding: 12px 0;
     border-bottom: 1px solid var(--ws-slate-100);
+  }
+
+  .dashboard-table tbody td[data-label='Recipient'] {
+    grid-area: person;
+    padding-top: 12px;
+  }
+
+  .dashboard-table tbody td[data-label='Route'] {
+    grid-area: route;
+    padding-bottom: 12px;
+    line-height: 1.4;
+  }
+
+  .dashboard-table tbody td[data-label='Recipient'],
+  .dashboard-table tbody td[data-label='Route'] {
+    font-weight: 500;
+    color: var(--ws-ink);
+    overflow-wrap: anywhere;
   }
 }
 
+/* Small phones: iPhone SE, Galaxy A-series compact */
+@media (max-width: 374px) {
+  .dashboard-title {
+    font-size: 1.45rem;
+  }
+
+  .dashboard-stats {
+    gap: 10px;
+  }
+
+  .dashboard-stat-card {
+    padding: 14px 10px 14px 16px;
+  }
+
+  .dashboard-stat-value {
+    font-size: 1.6rem;
+  }
+
+  .dashboard-table tbody tr {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+/* Landscape phones are wider than 640px, so they get the tablet layout above.
+   Keep vertical rhythm compact when the screen is short. */
+@media (min-width: 641px) and (max-height: 480px) {
+  .dashboard-header {
+    margin-bottom: 14px;
+  }
+
+  .dashboard-stats {
+    margin-bottom: 14px;
+  }
+
+  .dashboard-stat-card {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}
+
+/* ---------- Reduced motion ------------------------------------------------ */
+
 @media (prefers-reduced-motion: reduce) {
   .dashboard-stat-card,
-  .dashboard-cta {
+  .dashboard-table-card {
+    animation: none;
+  }
+
+  .dashboard-stat-card,
+  .dashboard-cta,
+  .dashboard-table tbody tr {
     transition: none;
   }
 }

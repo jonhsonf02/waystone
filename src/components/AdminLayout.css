@@ -1,241 +1,495 @@
-.admin-layout { display: flex; min-height: 100vh; background: var(--ws-slate-50); }
+/* ==========================================================================
+   AdminLayout.css  (Waystone)
+
+   Device strategy
+   - Desktop / iPad landscape (861px+): fixed sidebar. 861-1100px gets a
+     slimmer sidebar and tighter padding so iPad landscape feels native.
+   - Tablet portrait + large phones (up to 860px): top bar + slide-in drawer.
+   - Phones (up to 640px): same drawer, bigger touch targets, safe-area
+     padding for the iPhone notch / Dynamic Island / home bar and Android
+     gesture bars.
+   - Short landscape phones: compact sidebar so nothing is cut off.
+
+   Needs this in index.html for the safe-area values to work:
+   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+   ========================================================================== */
+
+/* Stop iOS from inflating text after rotation */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.admin-layout {
+  /* Uses your global tokens when they exist, sensible fallbacks otherwise */
+  --al-navy-900: var(--ws-navy-900, #0a1428);
+  --al-navy-800: var(--ws-navy-800, #12213c);
+  --al-blue-500: var(--ws-blue-500, #1e5eff);
+  --al-blue-600: var(--ws-blue-600, #1749d6);
+  --al-amber-500: var(--ws-amber-500, #f5a623);
+  --al-white: var(--ws-white, #ffffff);
+  --al-slate-300: var(--ws-slate-300, #c2cad4);
+  --al-slate-400: var(--ws-slate-400, #98a3b1);
+  --al-bg: var(--ws-slate-50, #f6f8fa);
+  --al-radius: var(--radius-md, 10px);
+  --al-ease: var(--ease, cubic-bezier(0.22, 1, 0.36, 1));
+  --al-font-heading: var(--font-heading, 'Space Grotesk', 'Segoe UI', sans-serif);
+
+  --al-sidebar-w: 248px;
+  --al-topbar-h: 56px;
+
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--al-bg);
+}
+
+.admin-layout a,
+.admin-layout button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.admin-layout a:focus-visible,
+.admin-layout button:focus-visible {
+  outline: 2px solid var(--al-amber-500);
+  outline-offset: 2px;
+}
+
+/* ---------- Sidebar (desktop + iPad landscape) --------------------------- */
 
 .admin-sidebar {
-  width: 248px;
-  background: linear-gradient(180deg, var(--ws-navy-900) 0%, var(--ws-navy-800) 100%);
-  color: var(--ws-white);
-  display: flex;
-  flex-direction: column;
-  padding: 1.5rem 1.1rem;
-  flex-shrink: 0;
   position: sticky;
   top: 0;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: var(--al-sidebar-w);
   height: 100vh;
+  height: 100dvh;
+  padding: 1.5rem 1.1rem;
+  color: var(--al-white);
+  background:
+    radial-gradient(18rem 14rem at 0% 0%, rgba(30, 94, 255, 0.24), transparent 70%),
+    linear-gradient(180deg, var(--al-navy-900) 0%, var(--al-navy-800) 100%);
 }
 
 .admin-sidebar-brand {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 1.05rem;
   margin-bottom: 2.25rem;
   padding: 0 0.4rem;
+  font-family: var(--al-font-heading);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .admin-sidebar-mark {
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, var(--ws-blue-500), var(--ws-blue-600));
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
-  box-shadow: 0 2px 10px rgba(30, 94, 255, 0.35);
-}
-
-.admin-sidebar-nav {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.admin-sidebar-link {
-  padding: 0.65rem 0.8rem;
-  border-radius: var(--radius-md);
-  color: var(--ws-slate-300);
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: background 0.18s var(--ease), color 0.18s var(--ease), transform 0.15s var(--ease);
-}
-
-.admin-sidebar-link:hover { background: rgba(255,255,255,0.07); color: var(--ws-white); transform: translateX(2px); }
-.admin-sidebar-link--active { background: rgba(30, 94, 255, 0.2); color: var(--ws-white); box-shadow: inset 2px 0 0 var(--ws-blue-500); }
-
-.admin-sidebar-footer { border-top: 1px solid rgba(255,255,255,0.09); padding-top: 1.1rem; flex-shrink: 0; }
-
-.admin-sidebar-user { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 1rem; }
-
-.admin-sidebar-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--ws-amber-500), #d68f14);
-  display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 0.92rem; color: var(--ws-navy-900);
-  box-shadow: 0 2px 8px rgba(245, 166, 35, 0.3);
   flex-shrink: 0;
-}
-
-.admin-sidebar-name { font-size: 0.86rem; font-weight: 600; line-height: 1.3; }
-.admin-sidebar-role { font-size: 0.72rem; color: var(--ws-slate-400); text-transform: capitalize; }
-
-.admin-sidebar-logout {
-  width: 100%;
-  padding: 0.55rem;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.14);
-  border-radius: var(--radius-md);
-  color: var(--ws-slate-300);
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.18s var(--ease);
-}
-
-.admin-sidebar-logout:hover {
-  background: rgba(217, 59, 59, 0.15);
-  border-color: rgba(217, 59, 59, 0.4);
-  color: #ffb3b3;
-}
-
-.admin-main {
-  flex: 1;
-  min-width: 0;
-  padding: 2.25rem 2.75rem;
-  overflow-x: auto;
+  width: 32px;
+  height: 32px;
+  font-size: 0.85rem;
+  background: linear-gradient(135deg, var(--al-blue-500), var(--al-blue-600));
+  border-radius: 9px;
+  box-shadow: 0 4px 14px rgba(30, 94, 255, 0.45);
 }
 
 img.admin-sidebar-mark {
   object-fit: contain;
-  padding: 3px;
+  padding: 4px;
 }
 
-/* ---- Mobile-only pieces: hidden on desktop ---- */
+.admin-sidebar-nav {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.admin-sidebar-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.65rem 0.9rem;
+  color: var(--al-slate-300);
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: var(--al-radius);
+  transition: background-color 0.18s var(--al-ease), color 0.18s var(--al-ease);
+}
+
+.admin-sidebar-link--active {
+  color: var(--al-white);
+  font-weight: 600;
+  background: rgba(30, 94, 255, 0.24);
+  box-shadow: inset 3px 0 0 var(--al-blue-500);
+}
+
+.admin-sidebar-footer {
+  flex-shrink: 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.admin-sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 0;
+  margin-bottom: 1rem;
+}
+
+.admin-sidebar-user > div:last-child {
+  min-width: 0;
+}
+
+.admin-sidebar-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--al-navy-900);
+  background: linear-gradient(135deg, var(--al-amber-500), #d68f14);
+  border-radius: 50%;
+  box-shadow: 0 2px 10px rgba(245, 166, 35, 0.35);
+}
+
+.admin-sidebar-name,
+.admin-sidebar-role {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-sidebar-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.admin-sidebar-role {
+  font-size: 0.74rem;
+  color: var(--al-slate-400);
+  text-transform: capitalize;
+}
+
+.admin-sidebar-logout {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.6rem;
+  color: var(--al-slate-300);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--al-radius);
+  cursor: pointer;
+  transition: background-color 0.18s var(--al-ease), border-color 0.18s var(--al-ease), color 0.18s var(--al-ease);
+}
+
+/* ---------- Main --------------------------------------------------------- */
+
+.admin-main {
+  flex: 1;
+  min-width: 0;
+  padding: 2.25rem 2.75rem 3rem;
+  overflow-x: auto;
+}
+
+/* ---------- Mobile-only pieces: hidden on desktop ------------------------ */
+
 .admin-topbar,
 .admin-backdrop,
 .admin-sidebar-close {
   display: none;
 }
 
-/* ---------------------------------------------------------------
-   Tablet & phone: sidebar becomes a slide-in drawer
-   ----------------------------------------------------------------*/
-@media (max-width: 860px) {
-  .admin-layout { flex-direction: column; }
+/* ---------- Hover effects only where a real pointer exists ---------------- */
 
+@media (hover: hover) and (pointer: fine) {
+  .admin-sidebar-link:hover {
+    color: var(--al-white);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .admin-sidebar-link--active:hover {
+    background: rgba(30, 94, 255, 0.3);
+  }
+
+  .admin-sidebar-logout:hover {
+    color: #ffb3b3;
+    background: rgba(217, 59, 59, 0.16);
+    border-color: rgba(217, 59, 59, 0.45);
+  }
+}
+
+/* Touch feedback instead */
+.admin-sidebar-link:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.admin-sidebar-logout:active {
+  color: #ffb3b3;
+  background: rgba(217, 59, 59, 0.2);
+}
+
+/* ---------- iPad landscape / small laptops (861px to 1100px) -------------- */
+
+@media (min-width: 861px) and (max-width: 1100px) {
+  .admin-layout {
+    --al-sidebar-w: 220px;
+  }
+
+  .admin-sidebar {
+    padding: 1.25rem 0.9rem;
+  }
+
+  .admin-main {
+    padding: 1.75rem 1.75rem 2.5rem;
+  }
+}
+
+/* ---------- Short landscape screens (phones on their side) ---------------- */
+
+@media (min-width: 861px) and (max-height: 520px) {
+  .admin-sidebar {
+    padding: 0.9rem 0.9rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+    padding-left: max(0.9rem, env(safe-area-inset-left, 0px));
+  }
+
+  .admin-sidebar-brand {
+    margin-bottom: 1rem;
+  }
+
+  .admin-sidebar-user {
+    margin-bottom: 0.6rem;
+  }
+
+  .admin-sidebar-footer {
+    padding-top: 0.7rem;
+  }
+
+  .admin-main {
+    padding-right: max(1.75rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+/* ==========================================================================
+   Tablet portrait and phones: top bar + slide-in drawer
+   ========================================================================== */
+
+@media (max-width: 860px) {
+  .admin-layout {
+    flex-direction: column;
+  }
+
+  /* --- top bar --- */
   .admin-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     position: sticky;
     top: 0;
     z-index: 30;
-    height: 60px;
-    padding: 0 1rem;
-    background: linear-gradient(90deg, var(--ws-navy-900) 0%, var(--ws-navy-800) 100%);
-    color: var(--ws-white);
-    box-shadow: 0 2px 12px rgba(10, 20, 40, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: calc(var(--al-topbar-h) + env(safe-area-inset-top, 0px));
+    padding: env(safe-area-inset-top, 0px) max(1rem, env(safe-area-inset-right, 0px)) 0
+      max(1rem, env(safe-area-inset-left, 0px));
+    color: var(--al-white);
+    background: linear-gradient(90deg, var(--al-navy-900) 0%, var(--al-navy-800) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 4px 16px rgba(10, 20, 40, 0.22);
   }
 
   .admin-topbar-brand {
     display: flex;
     align-items: center;
-    gap: 0.6rem;
-    font-family: var(--font-heading);
+    gap: 0.65rem;
+    font-family: var(--al-font-heading);
+    font-size: 1.05rem;
     font-weight: 700;
-    font-size: 1rem;
+    letter-spacing: -0.01em;
   }
 
   .admin-topbar-mark {
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
     object-fit: contain;
-    padding: 3px;
-    background: linear-gradient(135deg, var(--ws-blue-500), var(--ws-blue-600));
+    background: linear-gradient(135deg, var(--al-blue-500), var(--al-blue-600));
+    border-radius: 9px;
+    box-shadow: 0 3px 10px rgba(30, 94, 255, 0.4);
   }
 
   .admin-topbar-menu {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     justify-content: center;
     gap: 5px;
-    width: 44px;
-    height: 44px;
-    padding: 0 11px;
+    width: 46px;
+    height: 46px;
+    padding: 0 13px;
     background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
     cursor: pointer;
-    transition: background 0.18s var(--ease);
+    transition: background-color 0.18s var(--al-ease), transform 0.12s var(--al-ease);
   }
 
-  .admin-topbar-menu:hover { background: rgba(255, 255, 255, 0.14); }
-
-  .admin-topbar-menu:focus-visible {
-    outline: 2px solid var(--ws-blue-500);
-    outline-offset: 2px;
+  .admin-topbar-menu:active {
+    background: rgba(255, 255, 255, 0.18);
+    transform: scale(0.94);
   }
 
   .admin-topbar-menu span {
     display: block;
     height: 2px;
-    width: 100%;
-    background: var(--ws-white);
+    background: var(--al-white);
     border-radius: 2px;
   }
 
+  /* the middle bar is shorter, a small detail that reads as "menu" */
+  .admin-topbar-menu span:nth-child(2) {
+    width: 70%;
+  }
+
+  /* --- backdrop --- */
   .admin-backdrop {
-    display: block;
     position: fixed;
     inset: 0;
     z-index: 40;
-    background: rgba(8, 14, 28, 0.55);
+    display: block;
+    background: rgba(6, 12, 24, 0.6);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.25s var(--ease), visibility 0.25s;
+    transition: opacity 0.28s var(--al-ease), visibility 0.28s;
   }
 
-  .admin-backdrop--open { opacity: 1; visibility: visible; }
+  .admin-backdrop--open {
+    opacity: 1;
+    visibility: visible;
+  }
 
+  /* --- drawer --- */
   .admin-sidebar {
     position: fixed;
     top: 0;
-    left: 0;
     bottom: 0;
+    left: 0;
     z-index: 50;
-    width: min(280px, 84vw);
+    width: calc(min(300px, 86vw) + env(safe-area-inset-left, 0px));
     height: 100vh;
     height: 100dvh;
-    padding: 1.25rem 1.1rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
-    transform: translateX(-100%);
+    padding: calc(1.25rem + env(safe-area-inset-top, 0px)) 1.1rem
+      calc(1.25rem + env(safe-area-inset-bottom, 0px))
+      calc(1.1rem + env(safe-area-inset-left, 0px));
+    overscroll-behavior: contain;
     visibility: hidden;
-    transition: transform 0.28s var(--ease), visibility 0.28s;
-    box-shadow: 8px 0 32px rgba(8, 14, 28, 0.35);
+    transform: translateX(-100%);
+    transition: transform 0.32s var(--al-ease), visibility 0.32s;
+    box-shadow: 10px 0 40px rgba(6, 12, 24, 0.45);
+    will-change: transform;
   }
 
-  .admin-sidebar--open { transform: translateX(0); visibility: visible; }
+  .admin-sidebar--open {
+    visibility: visible;
+    transform: translateX(0);
+  }
 
-  .admin-sidebar-brand { margin-bottom: 1.5rem; }
+  .admin-sidebar-brand {
+    margin-bottom: 1.5rem;
+  }
 
   .admin-sidebar-close {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 44px;
+    height: 44px;
     margin-left: auto;
-    width: 36px;
-    height: 36px;
-    font-size: 0.95rem;
-    color: var(--ws-slate-300);
-    background: rgba(255, 255, 255, 0.07);
-    border: none;
-    border-radius: 8px;
+    color: var(--al-slate-300);
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 0;
+    border-radius: 12px;
     cursor: pointer;
   }
 
-  .admin-sidebar-close:hover { background: rgba(255, 255, 255, 0.14); color: var(--ws-white); }
+  .admin-sidebar-close:active {
+    color: var(--al-white);
+    background: rgba(255, 255, 255, 0.18);
+  }
 
-  .admin-sidebar-link { padding: 0.8rem 0.9rem; font-size: 0.95rem; }
+  .admin-sidebar-link {
+    min-height: 50px;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+  }
 
-  .admin-main { padding: 1.25rem 1rem 2rem; overflow-x: hidden; }
+  .admin-sidebar-logout {
+    min-height: 50px;
+    font-size: 0.95rem;
+  }
+
+  /* --- main --- */
+  .admin-main {
+    padding: 1.5rem max(1.5rem, env(safe-area-inset-right, 0px))
+      calc(2.25rem + env(safe-area-inset-bottom, 0px)) max(1.5rem, env(safe-area-inset-left, 0px));
+    overflow-x: clip;
+  }
 }
+
+/* ---------- Phones -------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .admin-layout {
+    --al-topbar-h: 54px;
+  }
+
+  .admin-main {
+    padding: 1.15rem max(1rem, env(safe-area-inset-right, 0px))
+      calc(2rem + env(safe-area-inset-bottom, 0px)) max(1rem, env(safe-area-inset-left, 0px));
+  }
+}
+
+/* Very narrow screens: foldables (cover display), iPhone SE 1st gen */
+@media (max-width: 359px) {
+  .admin-topbar-brand span {
+    font-size: 0.95rem;
+  }
+
+  .admin-main {
+    padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+    padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+/* ---------- Reduced motion ------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {
   .admin-sidebar,
   .admin-backdrop,
-  .admin-topbar-menu { transition: none; }
+  .admin-topbar-menu,
+  .admin-sidebar-link,
+  .admin-sidebar-logout {
+    transition: none;
+  }
 }
