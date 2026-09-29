@@ -85,7 +85,7 @@ function HomePage() {
     setLoading(true);
     try {
       const res = await getShipmentByNumber(trackingNumber.trim());
-      window.location.href = `/track/${res.shipment.trackingLinkToken}`;
+      window.open(`/track/${res.shipment.trackingLinkToken}`, '_blank', 'noopener,noreferrer');
     } catch (err) {
       setError(err.message);
     } finally {
