@@ -1,0 +1,381 @@
+/* ==========================================================================
+   LiveMap.css  (Waystone)
+
+   The real map, dressed to match the waybill it sits in:
+   - A rounded frame with a soft, slightly desaturated OpenStreetMap so the
+     marker is the loudest thing on the screen.
+   - The marker is a teal beacon with two staggered rings that ripple out.
+   - Glass chips float over the map: location (top left), zoom (top right),
+     a "Live" pill (bottom left). Leaflet's attribution stays visible.
+   - Big, thumb-sized zoom buttons on touch screens.
+   - The wrapper isolates its stacking context, so Leaflet's high z-indexes
+     can never cover the "Live update received" toast or any menu.
+
+   This file loads after leaflet/dist/leaflet.css, so equal-specificity rules
+   here win. Every Leaflet override is also scoped to .live-map-container.
+   ========================================================================== */
+
+.live-map-wrap,
+.live-map-fallback {
+  --lm-ink: #0e1b2c;
+  --lm-ink-soft: #465569;
+  --lm-muted: #7b8898;
+  --lm-line: #dde6e3;
+  --lm-mist: #f0f5f3;
+  --lm-teal: #14b8a0;
+  --lm-teal-deep: #0c7d6c;
+  --lm-teal-tint: #ddf6f1;
+  --lm-glow: #2de0c4;
+  --lm-amber: #ffb800;
+  --lm-font: var(--tp-font-body, 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif);
+  --lm-font-display: var(--tp-font-display, 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif);
+  --lm-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Frame -------------------------------------------------------- */
+
+.live-map-wrap {
+  position: relative;
+  isolation: isolate; /* keeps Leaflet's z-indexes inside this box */
+  overflow: hidden;
+  font-family: var(--lm-font);
+  background: var(--lm-mist);
+  border: 1px solid var(--lm-line);
+  border-radius: 22px;
+  box-shadow: 0 1px 2px rgba(7, 13, 24, 0.05), 0 22px 40px -26px rgba(7, 13, 24, 0.5);
+  animation: lm-fade 0.7s ease backwards;
+}
+
+@keyframes lm-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.live-map-container {
+  width: 100%;
+  height: clamp(260px, min(58vw, 62dvh), 420px);
+  font-family: var(--lm-font);
+  /* shown while tiles load, or if they fail on a bad connection */
+  background:
+    radial-gradient(rgba(14, 27, 44, 0.09) 1px, transparent 1px) 0 0 / 22px 22px,
+    #e7eeeb;
+}
+
+.live-map-container.leaflet-container {
+  font-family: var(--lm-font);
+  outline: none;
+}
+
+/* calmer map colours so the marker pops */
+.live-map-container .leaflet-tile-pane {
+  filter: saturate(0.78) contrast(1.03);
+}
+
+/* ---------- Floating chips ---------------------------------------------- */
+
+.live-map-caption {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1100;
+  max-width: calc(100% - 88px); /* leaves room for the zoom buttons */
+  margin: 0;
+  padding: 10px 15px;
+  overflow: hidden;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--lm-ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.94);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-radius: 13px;
+  box-shadow: 0 12px 26px -12px rgba(7, 13, 24, 0.6);
+  pointer-events: none;
+}
+
+/* "Live" pill with a dot, drawn with one pseudo-element */
+.live-map-wrap::before {
+  content: 'Live';
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 1100;
+  padding: 6px 13px 6px 29px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #04231e;
+  background:
+    radial-gradient(circle at 15px 50%, #04231e 3.5px, transparent 4.5px),
+    rgba(45, 224, 196, 0.96);
+  border-radius: 999px;
+  box-shadow: 0 10px 20px -10px rgba(20, 184, 160, 0.95);
+  pointer-events: none;
+}
+
+/* ---------- Marker: a beacon -------------------------------------------- */
+
+.live-map-pulse-icon {
+  background: none;
+  border: 0;
+}
+
+.live-map-pulse-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  background: linear-gradient(135deg, var(--lm-teal), var(--lm-teal-deep));
+  border: 3.5px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 8px 16px rgba(7, 13, 24, 0.45), 0 0 0 1px rgba(12, 125, 108, 0.3);
+}
+
+.live-map-pulse-ring,
+.live-map-pulse-ring::after {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(20, 184, 160, 0.5);
+  animation: lm-ripple 2.6s ease-out infinite;
+}
+
+.live-map-pulse-ring::after {
+  content: '';
+  animation-delay: 1.3s;
+}
+
+@keyframes lm-ripple {
+  from { transform: scale(0.5); opacity: 0.75; }
+  to   { transform: scale(3.6); opacity: 0; }
+}
+
+/* ---------- Leaflet controls -------------------------------------------- */
+
+/* zoom buttons move to the top right so the location chip has the left */
+.live-map-container .leaflet-top.leaflet-left {
+  right: 0;
+  left: auto;
+}
+
+.live-map-container .leaflet-left .leaflet-control {
+  float: right;
+  margin-right: 12px;
+  margin-left: 0;
+}
+
+.live-map-container .leaflet-top .leaflet-control {
+  margin-top: 12px;
+}
+
+.live-map-container .leaflet-bar {
+  overflow: hidden;
+  border: 0;
+  border-radius: 14px;
+  box-shadow: 0 12px 26px -10px rgba(7, 13, 24, 0.55);
+}
+
+.live-map-container .leaflet-bar a,
+.live-map-container .leaflet-touch .leaflet-bar a {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  font: 700 22px/1 var(--lm-font);
+  color: var(--lm-ink);
+  text-indent: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid var(--lm-line);
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.live-map-container .leaflet-bar a:last-child {
+  border-bottom: 0;
+}
+
+.live-map-container .leaflet-bar a:active {
+  color: #fff;
+  background-color: var(--lm-teal);
+}
+
+.live-map-container .leaflet-bar a.leaflet-disabled {
+  color: #b4bfc9;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.live-map-container .leaflet-bar a:focus-visible {
+  outline: 3px solid var(--lm-amber);
+  outline-offset: -3px;
+}
+
+/* attribution is required by OpenStreetMap, so it stays, just tidier */
+.live-map-container .leaflet-control-attribution {
+  margin: 0 10px 10px 0;
+  padding: 3px 9px;
+  font-size: 0.66rem;
+  line-height: 1.5;
+  color: var(--lm-ink-soft);
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border-radius: 8px;
+}
+
+.live-map-container .leaflet-control-attribution a {
+  color: var(--lm-teal-deep);
+  text-decoration: none;
+}
+
+/* ---------- Fallback: no coordinates yet -------------------------------- */
+
+.live-map-fallback {
+  position: relative;
+  padding: 20px 22px 20px 78px;
+  font-size: 0.96rem;
+  line-height: 1.6;
+  color: var(--lm-ink-soft);
+  background: var(--lm-mist);
+  border: 2px dashed #c7d4d0;
+  border-radius: 20px;
+}
+
+/* amber circle ... */
+.live-map-fallback::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  background: #fff1c7;
+  border-radius: 50%;
+}
+
+/* ... with a pin drawn on top */
+.live-map-fallback::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  width: 44px;
+  height: 44px;
+  margin-top: -22px;
+  background: #b57f00;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 00-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z'/%3E%3C/svg%3E") center / 22px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a7 7 0 00-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 6.5a2.5 2.5 0 010 5z'/%3E%3C/svg%3E") center / 22px no-repeat;
+}
+
+/* ---------- Touch screens: thumb-sized controls ------------------------- */
+
+@media (pointer: coarse) {
+  .live-map-container .leaflet-bar a,
+  .live-map-container .leaflet-touch .leaflet-bar a {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+
+  .live-map-caption {
+    max-width: calc(100% - 94px);
+  }
+}
+
+/* ---------- Tablet ------------------------------------------------------- */
+
+@media (min-width: 641px) and (max-width: 960px) {
+  .live-map-container {
+    height: clamp(300px, 46vw, 400px);
+  }
+}
+
+/* ---------- Phones (iPhone + Android) ----------------------------------- */
+
+@media (max-width: 640px) {
+  .live-map-wrap {
+    border-radius: 18px;
+  }
+
+  .live-map-container {
+    height: clamp(260px, 78vw, 340px);
+  }
+
+  .live-map-caption {
+    top: 10px;
+    left: 10px;
+    padding: 9px 13px;
+    font-size: 0.88rem;
+    border-radius: 12px;
+  }
+
+  .live-map-wrap::before {
+    left: 10px;
+    bottom: 10px;
+  }
+
+  .live-map-container .leaflet-top.leaflet-left .leaflet-control {
+    margin-top: 10px;
+    margin-right: 10px;
+  }
+
+  .live-map-fallback {
+    padding: 18px 16px 18px 70px;
+    font-size: 0.92rem;
+    border-radius: 18px;
+  }
+
+  .live-map-fallback::before,
+  .live-map-fallback::after {
+    left: 16px;
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+  }
+}
+
+/* Very narrow screens: keep the attribution from colliding with the Live pill */
+@media (max-width: 359px) {
+  .live-map-container .leaflet-control-attribution {
+    max-width: 60%;
+    font-size: 0.6rem;
+  }
+}
+
+/* Landscape phones are short: don't let the map fill the whole screen */
+@media (max-height: 480px) and (orientation: landscape) {
+  .live-map-container {
+    height: clamp(200px, 62dvh, 280px);
+  }
+}
+
+/* ---------- Reduced motion ------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .live-map-wrap,
+  .live-map-pulse-ring,
+  .live-map-pulse-ring::after {
+    animation: none;
+  }
+
+  /* with no ripple, keep a soft static halo around the marker */
+  .live-map-pulse-ring {
+    background: rgba(20, 184, 160, 0.3);
+    transform: scale(1.8);
+  }
+
+  .live-map-pulse-ring::after {
+    display: none;
+  }
+
+  .live-map-container .leaflet-bar a {
+    transition: none;
+  }
+}

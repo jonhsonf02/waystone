@@ -5,6 +5,7 @@ import { useSocket } from '../hooks/useSocket.js';
 import StatusBadge from '../components/StatusBadge.jsx';
 import ProgressBar from '../components/ProgressBar.jsx';
 import RouteMap from '../components/RouteMap.jsx';
+import LiveMap from '../components/LiveMap.jsx';
 import Timeline from '../components/Timeline.jsx';
 import LoadingState from '../components/LoadingState.jsx';
 import './PublicTrackingPage.css';
@@ -74,6 +75,12 @@ function PublicTrackingPage() {
           <span className="tracking-page-current-location-label">Current Location</span>
           <span className="tracking-page-current-location-value">📍 {currentLocation}</span>
         </div>
+
+        <LiveMap
+          lat={latestEvent?.location?.lat}
+          lng={latestEvent?.location?.lng}
+          label={currentLocation !== '—' ? currentLocation : null}
+        />
 
         {shipment.waypoints?.length > 0 && (
           <div className="tracking-page-route">

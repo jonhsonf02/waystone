@@ -1,19 +1,28 @@
 /* ==========================================================================
-   ShipmentDetailPage.css
-   Concept: a freight waybill. Quiet, ink-on-paper surfaces everywhere, with
-   one memorable element: the client tracking link, styled as a dark,
-   notched ticket. Route teal = movement, amber = action.
+   ShipmentDetailPage.css  (Waystone admin)
+
+   Concept: a freight waybill. Quiet ink-on-paper surfaces with one memorable
+   element, the client tracking link, styled as a dark notched ticket.
+   Route teal = movement, amber = action.
+
+   Devices
+   - Desktop / iPad: summary grid, ticket, centred modals.
+   - Phones (up to 640px): header buttons in a 2-up grid, stacked ticket,
+     stopovers as a vertical route, and modals become bottom sheets with a
+     sticky action bar that clears the home bar. Inputs are 16px so iOS
+     Safari never zooms. Touch targets are 44-48px.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
   --sd-ink: #0e1b2c;
   --sd-ink-soft: #3b4a5f;
-  --sd-muted: #7a8799;
+  --sd-muted: #6f7c8e;
   --sd-paper: #ffffff;
   --sd-mist: #f1f5f4;
   --sd-line: #e2e8e6;
+  --sd-page: var(--ws-slate-50, #f6f8fa); /* admin page background, used for ticket notches */
   --sd-route: #0f9d8a;
   --sd-route-deep: #0b7768;
   --sd-route-tint: #dff5f0;
@@ -22,33 +31,19 @@
   --sd-danger: #d6423f;
   --sd-danger-tint: #fdeceb;
 
-  --sd-font-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
-  --sd-font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --sd-font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  /* same families as the other admin pages */
+  --sd-font-display: var(--ws-font-display, 'Space Grotesk', 'Segoe UI', system-ui, sans-serif);
+  --sd-font-body: var(--ws-font-body, 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif);
+  --sd-font-mono: var(--ws-font-mono, 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace);
 
-  --sd-r-sm: 8px;
+  --sd-r-sm: 10px;
   --sd-r-md: 14px;
-  --sd-r-lg: 22px;
+  --sd-r-lg: 18px;
 
   --sd-shadow-sm: 0 1px 2px rgba(14, 27, 44, 0.06);
-  --sd-shadow-md: 0 8px 24px -10px rgba(14, 27, 44, 0.18);
-  --sd-shadow-lg: 0 30px 60px -20px rgba(14, 27, 44, 0.35);
+  --sd-shadow-md: 0 1px 2px rgba(14, 27, 44, 0.04), 0 12px 28px -16px rgba(14, 27, 44, 0.2);
+  --sd-shadow-lg: 0 30px 60px -20px rgba(14, 27, 44, 0.4);
   --sd-ease: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --sd-ink: #e9eff5;
-    --sd-ink-soft: #b3c0cf;
-    --sd-muted: #7f8ea1;
-    --sd-paper: #141f2e;
-    --sd-mist: #1a2738;
-    --sd-line: #26364a;
-    --sd-route-tint: #12362f;
-    --sd-danger-tint: #3a1d1d;
-    --sd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --sd-shadow-md: 0 8px 24px -10px rgba(0, 0, 0, 0.6);
-  }
 }
 
 /* ---------- Header ------------------------------------------------------- */
@@ -65,8 +60,7 @@
   font-family: var(--sd-font-body);
 }
 
-/* The one orchestrated moment: a route line that draws in, with a
-   marker travelling along it once on load. */
+/* a route line that draws in once on load */
 .detail-header::before,
 .detail-header::after {
   content: '';
@@ -86,12 +80,12 @@
   width: 100%;
   background: linear-gradient(90deg, var(--sd-route), var(--sd-amber));
   transform-origin: left;
-  animation: sd-draw-route 1.4s var(--sd-ease) 0.15s both;
+  animation: sd-draw-route 1.4s var(--sd-ease) 0.15s backwards;
 }
 
 @keyframes sd-draw-route {
   from { transform: scaleX(0); }
-  to   { transform: scaleX(1); opacity: 0.9; }
+  to   { transform: scaleX(1); }
 }
 
 .detail-eyebrow {
@@ -99,10 +93,9 @@
   align-items: center;
   gap: 0.5rem;
   margin: 0 0 0.6rem;
-  padding: 0.25rem 0.7rem 0.25rem 0.55rem;
-  font-size: 0.78rem;
+  padding: 0.28rem 0.75rem 0.28rem 0.6rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
   color: var(--sd-route-deep);
   background: var(--sd-route-tint);
   border-radius: 999px;
@@ -114,7 +107,6 @@
   height: 7px;
   border-radius: 50%;
   background: var(--sd-route);
-  box-shadow: 0 0 0 0 rgba(15, 157, 138, 0.5);
   animation: sd-pulse 2.2s ease-out infinite;
 }
 
@@ -127,10 +119,10 @@
 .detail-title {
   margin: 0;
   font-family: var(--sd-font-mono);
-  font-size: clamp(1.6rem, 3.6vw, 2.5rem);
+  font-size: clamp(1.45rem, 3.6vw, 2.4rem);
   font-weight: 600;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.15;
   color: var(--sd-ink);
   word-break: break-all;
 }
@@ -142,7 +134,7 @@
   gap: 0.75rem;
 }
 
-/* ---------- Buttons ------------------------------------------------------ */
+/* ---------- Buttons (shared) -------------------------------------------- */
 
 .detail-secondary-btn,
 .detail-push-btn,
@@ -150,15 +142,18 @@
 .detail-toggle-btn,
 .detail-date-save,
 .detail-date-cancel,
+.detail-geocode-btn,
 .modal-cancel,
 .modal-submit {
   font-family: var(--sd-font-body);
   font-size: 0.9rem;
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.2;
   cursor: pointer;
   border: 1px solid transparent;
   border-radius: var(--sd-r-sm);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   transition: transform 0.18s var(--sd-ease), box-shadow 0.18s var(--sd-ease),
     background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
@@ -169,37 +164,33 @@
 .detail-toggle-btn:focus-visible,
 .detail-date-save:focus-visible,
 .detail-date-cancel:focus-visible,
+.detail-geocode-btn:focus-visible,
 .modal-cancel:focus-visible,
 .modal-submit:focus-visible {
   outline: 3px solid var(--sd-amber);
   outline-offset: 2px;
 }
 
+.detail-secondary-btn,
+.detail-push-btn,
+.modal-cancel,
+.modal-submit {
+  min-height: 44px;
+}
+
 .detail-secondary-btn {
-  padding: 0.8rem 1.15rem;
+  padding: 0 1.15rem;
   color: var(--sd-ink);
   background: var(--sd-paper);
   border-color: var(--sd-line);
   box-shadow: var(--sd-shadow-sm);
 }
 
-.detail-secondary-btn:hover {
-  border-color: var(--sd-route);
-  color: var(--sd-route-deep);
-  transform: translateY(-2px);
-  box-shadow: var(--sd-shadow-md);
-}
-
 .detail-push-btn {
-  padding: 0.8rem 1.3rem;
+  padding: 0 1.3rem;
   color: #fff;
   background: linear-gradient(135deg, var(--sd-route), var(--sd-route-deep));
   box-shadow: 0 8px 18px -8px rgba(15, 157, 138, 0.8);
-}
-
-.detail-push-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 24px -10px rgba(15, 157, 138, 0.9);
 }
 
 .detail-secondary-btn:active,
@@ -207,13 +198,16 @@
 .detail-copy-btn:active,
 .detail-toggle-btn:active,
 .detail-date-save:active,
-.modal-submit:active {
-  transform: translateY(0) scale(0.97);
+.detail-geocode-btn:active:not(:disabled),
+.modal-submit:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 /* ---------- Client tracking link: the notched ticket --------------------- */
 
 .detail-link-card {
+  --tk-btn: 7.5rem;
+
   position: relative;
   display: flex;
   align-items: center;
@@ -228,22 +222,27 @@
     #0e1b2c;
   border-radius: var(--sd-r-md);
   box-shadow: var(--sd-shadow-lg);
-  /* ticket notches on the left and right edges */
-  -webkit-mask:
-    radial-gradient(circle 11px at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat,
-    radial-gradient(circle 11px at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
-  mask:
-    radial-gradient(circle 11px at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat,
-    radial-gradient(circle 11px at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
+}
+
+/* ticket notches: painted in the page colour so the card keeps its shadow
+   (a CSS mask would clip the shadow away) */
+.detail-link-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle 11px at 0 50%, var(--sd-page) 98%, transparent) left / 51% 100% no-repeat,
+    radial-gradient(circle 11px at 100% 50%, var(--sd-page) 98%, transparent) right / 51% 100% no-repeat;
 }
 
 /* perforation line before the copy button */
 .detail-link-card::before {
   content: '';
   position: absolute;
-  top: 14px;
-  bottom: 14px;
-  right: 9.5rem;
+  top: 16px;
+  bottom: 16px;
+  right: calc(2rem + var(--tk-btn) + 0.75rem);
   border-left: 2px dashed rgba(233, 239, 245, 0.22);
 }
 
@@ -262,24 +261,24 @@
 .detail-link-value {
   margin: 0;
   font-family: var(--sd-font-mono);
-  font-size: clamp(0.8rem, 1.6vw, 1rem);
+  font-size: clamp(0.78rem, 1.6vw, 1rem);
+  line-height: 1.5;
   color: #7ee8d5;
   overflow-wrap: anywhere;
+  -webkit-user-select: all;
   user-select: all;
 }
 
 .detail-copy-btn {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
-  min-width: 7rem;
-  padding: 0.85rem 1.2rem;
+  width: var(--tk-btn);
+  min-height: 46px;
+  padding: 0 1rem;
   color: #1a1400;
   background: var(--sd-amber);
   box-shadow: 0 8px 20px -8px rgba(245, 179, 1, 0.7);
-}
-
-.detail-copy-btn:hover {
-  background: #ffc61f;
-  transform: translateY(-2px);
 }
 
 /* ---------- Summary panel ------------------------------------------------ */
@@ -299,15 +298,12 @@
 
 .detail-summary > div {
   position: relative;
+  min-width: 0;
   padding: 1.35rem 1.5rem;
+  margin: 0 -1px -1px 0;
   border-right: 1px solid var(--sd-line);
   border-bottom: 1px solid var(--sd-line);
-  margin: 0 -1px -1px 0;
   transition: background-color 0.2s ease;
-}
-
-.detail-summary > div:hover {
-  background: var(--sd-mist);
 }
 
 .detail-summary > div::before {
@@ -322,15 +318,12 @@
   transition: height 0.3s var(--sd-ease);
 }
 
-.detail-summary > div:hover::before {
-  height: 1.6rem;
-}
-
 .detail-summary p {
   margin: 0;
   font-size: 1rem;
   font-weight: 500;
   line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .detail-summary .detail-summary-label {
@@ -340,7 +333,6 @@
   color: var(--sd-muted);
 }
 
-/* estimated delivery */
 .detail-date-row,
 .detail-automation-row {
   display: flex;
@@ -354,17 +346,23 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
-  animation: sd-pop 0.28s var(--sd-ease);
+  animation: sd-pop 0.28s var(--sd-ease) backwards;
 }
 
 .detail-date-edit .form-input {
-  padding: 0.55rem 0.7rem;
+  flex: 1 1 9rem;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 0.8rem;
   font-family: var(--sd-font-mono);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   color: var(--sd-ink);
+  text-align: left;
   background: var(--sd-mist);
   border: 1px solid var(--sd-line);
   border-radius: var(--sd-r-sm);
+  -webkit-appearance: none;
+  appearance: none;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -374,42 +372,32 @@
   box-shadow: 0 0 0 4px var(--sd-route-tint);
 }
 
+.detail-date-save,
+.detail-date-cancel {
+  min-height: 44px;
+}
+
 .detail-date-save {
-  padding: 0.6rem 0.9rem;
+  padding: 0 1.1rem;
   color: #fff;
   background: var(--sd-route);
 }
 
-.detail-date-save:hover {
-  background: var(--sd-route-deep);
-  transform: translateY(-1px);
-}
-
 .detail-date-cancel {
-  padding: 0.6rem 0.75rem;
+  min-width: 44px;
+  padding: 0 0.75rem;
   color: var(--sd-ink-soft);
   background: var(--sd-mist);
   border-color: var(--sd-line);
 }
 
-.detail-date-cancel:hover {
-  color: var(--sd-danger);
-  border-color: var(--sd-danger);
-}
-
 .detail-toggle-btn {
-  padding: 0.5rem 0.85rem;
-  font-size: 0.82rem;
+  min-height: 40px;
+  padding: 0 0.95rem;
+  font-size: 0.84rem;
   color: var(--sd-route-deep);
   background: transparent;
   border-color: var(--sd-line);
-}
-
-.detail-toggle-btn:hover {
-  color: #fff;
-  background: var(--sd-route);
-  border-color: var(--sd-route);
-  transform: translateY(-1px);
 }
 
 /* automation state pill */
@@ -418,7 +406,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.4rem 0.8rem;
+  padding: 0.42rem 0.85rem;
   font-size: 0.85rem;
   font-weight: 600;
   border-radius: 999px;
@@ -452,7 +440,7 @@
   background: var(--sd-muted);
 }
 
-/* ---------- Planned route: stops on a line ------------------------------- */
+/* ---------- Planned route + timeline cards ------------------------------- */
 
 .detail-waypoints-card,
 .detail-timeline-card {
@@ -464,6 +452,22 @@
   border: 1px solid var(--sd-line);
   border-radius: var(--sd-r-lg);
   box-shadow: var(--sd-shadow-md);
+}
+
+.detail-timeline-card {
+  position: relative;
+}
+
+.detail-timeline-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 1.75rem;
+  right: 1.75rem;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: linear-gradient(90deg, var(--sd-route), var(--sd-amber));
+  opacity: 0.85;
 }
 
 .detail-timeline-title {
@@ -521,45 +525,25 @@
   transform: translateY(-50%) rotate(45deg);
 }
 
-.detail-waypoint-chip:hover {
-  transform: translateY(-3px);
-  border-color: var(--sd-route);
-  box-shadow: 0 12px 20px -12px rgba(15, 157, 138, 0.7);
-}
-
 .detail-waypoint-label {
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--sd-route-deep);
 }
 
-/* ---------- Timeline wrapper (Timeline.jsx has its own styles) ----------- */
+/* ---------- Page-level error --------------------------------------------- */
 
-.detail-timeline-card {
-  position: relative;
-}
-
-.detail-timeline-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 1.75rem;
-  right: 1.75rem;
-  height: 3px;
-  border-radius: 0 0 3px 3px;
-  background: linear-gradient(90deg, var(--sd-route), var(--sd-amber));
-  opacity: 0.85;
-}
-
-/* ---------- States ------------------------------------------------------- */
-
-.detail-error {
-  padding: 1rem 1.25rem;
+.detail-error,
+.modal-error {
+  margin: 0 0 1.25rem;
+  padding: 0.9rem 1.15rem;
   font-family: var(--sd-font-body);
+  font-size: 0.92rem;
   font-weight: 500;
+  line-height: 1.5;
   color: var(--sd-danger);
   background: var(--sd-danger-tint);
-  border: 1px solid color-mix(in srgb, var(--sd-danger) 35%, transparent);
+  border: 1px solid #f6c9c7;
   border-left: 4px solid var(--sd-danger);
   border-radius: var(--sd-r-sm);
 }
@@ -573,27 +557,32 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: max(1rem, env(safe-area-inset-top, 0px)) max(1rem, env(safe-area-inset-right, 0px))
+    max(1rem, env(safe-area-inset-bottom, 0px)) max(1rem, env(safe-area-inset-left, 0px));
+  overscroll-behavior: contain;
   background: rgba(8, 16, 28, 0.62);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  animation: sd-fade 0.25s ease;
+  animation: sd-fade 0.25s ease backwards;
 }
 
 .modal-card {
   position: relative;
   width: 100%;
-  max-width: 480px;
+  max-width: 500px;
   max-height: calc(100vh - 2rem);
-  overflow-y: auto;
+  max-height: calc(100dvh - 2rem);
   padding: 2rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   font-family: var(--sd-font-body);
   color: var(--sd-ink);
   background: var(--sd-paper);
   border: 1px solid var(--sd-line);
   border-radius: var(--sd-r-lg);
   box-shadow: var(--sd-shadow-lg);
-  animation: sd-pop 0.35s var(--sd-ease);
+  animation: sd-pop 0.35s var(--sd-ease) backwards;
 }
 
 .modal-card::before {
@@ -603,7 +592,6 @@
   left: 0;
   right: 0;
   height: 4px;
-  border-radius: var(--sd-r-lg) var(--sd-r-lg) 0 0;
   background: linear-gradient(90deg, var(--sd-route), var(--sd-amber));
 }
 
@@ -611,7 +599,7 @@
   margin: 0 0 1.5rem;
   font-family: var(--sd-font-display);
   font-size: 1.5rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 
@@ -626,44 +614,86 @@
 .modal-card .form-input {
   display: block;
   width: 100%;
+  min-height: 48px;
   margin-top: 0.45rem;
-  padding: 0.8rem 0.95rem;
+  padding: 0.75rem 0.95rem;
   box-sizing: border-box;
   font-family: var(--sd-font-body);
   font-size: 0.95rem;
   font-weight: 400;
+  line-height: 1.4;
   color: var(--sd-ink);
-  background: var(--sd-mist);
-  border: 1px solid var(--sd-line);
+  background-color: var(--sd-mist);
+  border: 1.5px solid var(--sd-line);
   border-radius: var(--sd-r-sm);
+  -webkit-appearance: none;
+  appearance: none;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
 }
 
 .modal-card .form-input::placeholder {
-  color: var(--sd-muted);
-}
-
-.modal-card .form-input:hover {
-  border-color: var(--sd-muted);
+  color: #93a0b0;
 }
 
 .modal-card .form-input:focus {
   outline: none;
-  background: var(--sd-paper);
+  background-color: var(--sd-paper);
   border-color: var(--sd-route);
   box-shadow: 0 0 0 4px var(--sd-route-tint);
 }
 
 .modal-card textarea.form-input {
   resize: vertical;
-  min-height: 5.5rem;
+  min-height: 6rem;
   line-height: 1.5;
 }
 
 .modal-card select.form-input {
+  padding-right: 2.6rem;
   text-transform: capitalize;
   cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9' fill='none'%3E%3Cpath d='M1 1.5l6 6 6-6' stroke='%235c6675' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
 }
+
+/* ---------- Geocode button + coordinates -------------------------------- */
+
+.detail-geocode-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  min-height: 46px;
+  margin: -0.3rem 0 1.15rem;
+  padding: 0 1rem;
+  font-size: 0.88rem;
+  color: var(--sd-route-deep);
+  background: var(--sd-route-tint);
+  border: 1.5px dashed var(--sd-route);
+}
+
+.detail-geocode-btn:disabled {
+  cursor: progress;
+  background-image: linear-gradient(110deg, var(--sd-route-tint) 30%, #c6efe6 50%, var(--sd-route-tint) 70%);
+  background-size: 200% 100%;
+  animation: sd-shimmer 1.2s linear infinite;
+}
+
+.detail-latlng-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.detail-latlng-row .form-input {
+  font-family: var(--sd-font-mono);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Modal actions ------------------------------------------------ */
 
 .modal-actions {
   display: flex;
@@ -673,38 +703,23 @@
 }
 
 .modal-cancel {
-  padding: 0.8rem 1.2rem;
+  padding: 0 1.3rem;
   color: var(--sd-ink-soft);
   background: transparent;
   border-color: var(--sd-line);
 }
 
-.modal-cancel:hover {
-  color: var(--sd-ink);
-  background: var(--sd-mist);
-}
-
 .modal-submit {
-  padding: 0.8rem 1.5rem;
+  padding: 0 1.6rem;
   color: #fff;
   background: linear-gradient(135deg, var(--sd-route), var(--sd-route-deep));
   box-shadow: 0 8px 18px -8px rgba(15, 157, 138, 0.8);
 }
 
-.modal-submit:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 24px -10px rgba(15, 157, 138, 0.9);
-}
-
 .modal-submit:disabled {
   cursor: progress;
-  opacity: 0.7;
-  background-image: linear-gradient(
-    110deg,
-    var(--sd-route) 30%,
-    #35c2ae 50%,
-    var(--sd-route) 70%
-  );
+  opacity: 0.8;
+  background-image: linear-gradient(110deg, var(--sd-route) 30%, #35c2ae 50%, var(--sd-route) 70%);
   background-size: 200% 100%;
   animation: sd-shimmer 1.2s linear infinite;
 }
@@ -715,8 +730,13 @@
 }
 
 @keyframes sd-pop {
-  from { opacity: 0; transform: translateY(14px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes sd-sheet {
+  from { transform: translateY(100%); }
+  to   { transform: none; }
 }
 
 @keyframes sd-shimmer {
@@ -724,50 +744,201 @@
   to   { background-position: -200% 0; }
 }
 
-/* ---------- Responsive --------------------------------------------------- */
+/* ---------- Pointer devices only: hover ---------------------------------- */
+
+@media (hover: hover) and (pointer: fine) {
+  .detail-secondary-btn:hover {
+    color: var(--sd-route-deep);
+    border-color: var(--sd-route);
+    transform: translateY(-2px);
+    box-shadow: var(--sd-shadow-md);
+  }
+
+  .detail-push-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 24px -10px rgba(15, 157, 138, 0.9);
+  }
+
+  .detail-copy-btn:hover {
+    background: #ffc61f;
+    transform: translateY(-2px);
+  }
+
+  .detail-summary > div:hover {
+    background: var(--sd-mist);
+  }
+
+  .detail-summary > div:hover::before {
+    height: 1.6rem;
+  }
+
+  .detail-date-save:hover {
+    background: var(--sd-route-deep);
+    transform: translateY(-1px);
+  }
+
+  .detail-date-cancel:hover {
+    color: var(--sd-danger);
+    border-color: var(--sd-danger);
+  }
+
+  .detail-toggle-btn:hover {
+    color: #fff;
+    background: var(--sd-route);
+    border-color: var(--sd-route);
+    transform: translateY(-1px);
+  }
+
+  .detail-waypoint-chip:hover {
+    transform: translateY(-3px);
+    border-color: var(--sd-route);
+    box-shadow: 0 12px 20px -12px rgba(15, 157, 138, 0.7);
+  }
+
+  .modal-card .form-input:hover {
+    border-color: #b9c3cf;
+  }
+
+  .detail-geocode-btn:hover:not(:disabled) {
+    background: #cdf0e8;
+    transform: translateY(-1px);
+  }
+
+  .modal-cancel:hover {
+    color: var(--sd-ink);
+    background: var(--sd-mist);
+  }
+
+  .modal-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 24px -10px rgba(15, 157, 138, 0.9);
+  }
+}
+
+/* touch feedback for the same controls */
+.detail-toggle-btn:active {
+  color: #fff;
+  background: var(--sd-route);
+}
+
+.detail-date-cancel:active {
+  color: var(--sd-danger);
+  border-color: var(--sd-danger);
+}
+
+/* ---------- Touch screens: bigger targets, no iOS zoom ------------------- */
+
+@media (pointer: coarse) {
+  .detail-secondary-btn,
+  .detail-push-btn,
+  .modal-cancel,
+  .modal-submit {
+    min-height: 48px;
+  }
+
+  .detail-toggle-btn {
+    min-height: 44px;
+  }
+
+  .detail-date-edit .form-input,
+  .modal-card .form-input,
+  .detail-latlng-row .form-input {
+    font-size: 16px;
+  }
+}
+
+/* ==========================================================================
+   Tablet portrait (721px to 960px)
+   ========================================================================== */
+
+@media (min-width: 721px) and (max-width: 960px) {
+  .detail-link-card {
+    padding: 1.35rem 1.6rem;
+  }
+
+  .detail-link-card::before {
+    right: calc(1.6rem + var(--tk-btn) + 0.75rem);
+  }
+
+  .detail-waypoints-card,
+  .detail-timeline-card {
+    padding: 1.5rem;
+  }
+}
+
+/* ==========================================================================
+   Phones (iPhone + Android): up to 720px
+   ========================================================================== */
 
 @media (max-width: 720px) {
   .detail-header {
     align-items: flex-start;
+    gap: 1.1rem;
+    padding-bottom: 1.4rem;
+    margin-bottom: 1.4rem;
   }
 
+  /* status badge on its own line, then two equal buttons */
   .detail-header-right {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
+    gap: 0.7rem;
   }
 
-  .detail-header-right .detail-secondary-btn,
-  .detail-header-right .detail-push-btn {
-    flex: 1 1 auto;
+  .detail-header-right > :first-child {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .detail-secondary-btn,
+  .detail-push-btn {
+    width: 100%;
+    padding: 0 0.6rem;
     text-align: center;
   }
 
+  /* stacked ticket */
   .detail-link-card {
     flex-direction: column;
     align-items: stretch;
-    padding: 1.5rem 1.4rem;
-    /* notches move to the horizontal divider on stacked layout */
-    -webkit-mask: none;
-    mask: none;
+    gap: 1.1rem;
+    margin-bottom: 1.4rem;
+    padding: 1.4rem 1.25rem;
   }
 
-  .detail-link-card::before {
+  .detail-link-card::before,
+  .detail-link-card::after {
     display: none;
   }
 
   .detail-copy-btn {
     width: 100%;
+    min-height: 50px;
+  }
+
+  .detail-summary {
+    margin-bottom: 1.4rem;
+    border-radius: var(--sd-r-md);
   }
 
   .detail-summary > div {
-    padding: 1.15rem 1.25rem;
+    padding: 1.1rem 1.25rem;
   }
 
   .detail-waypoints-card,
   .detail-timeline-card {
-    padding: 1.35rem;
+    margin-bottom: 1.4rem;
+    padding: 1.35rem 1.15rem;
+    border-radius: var(--sd-r-md);
   }
 
-  /* stack stops vertically with a vertical connector */
+  .detail-timeline-card::before {
+    left: 1.15rem;
+    right: 1.15rem;
+  }
+
+  /* stopovers become a vertical route */
   .detail-waypoints-list {
     flex-direction: column;
     gap: 1.6rem;
@@ -791,28 +962,252 @@
     left: calc(1.4rem - 3px);
     transform: rotate(135deg);
   }
+}
 
-  .modal-card {
-    padding: 1.5rem;
+/* ==========================================================================
+   Phones: modals become bottom sheets (up to 640px)
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
   }
 
+  .modal-card {
+    max-width: none;
+    max-height: 92vh;
+    max-height: 92dvh;
+    padding: 1.7rem 1.25rem 0;
+    border-bottom: 0;
+    border-radius: 24px 24px 0 0;
+    animation: sd-sheet 0.4s var(--sd-ease) backwards;
+  }
+
+  .modal-card::before {
+    border-radius: 24px 24px 0 0;
+  }
+
+  /* grab handle */
+  .modal-card::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 42px;
+    height: 4px;
+    margin-left: -21px;
+    background: #cdd6d4;
+    border-radius: 4px;
+  }
+
+  .modal-title {
+    margin-bottom: 1.25rem;
+    font-size: 1.35rem;
+  }
+
+  .modal-card .form-input {
+    min-height: 52px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  /* action bar stays in reach while the form scrolls, clear of the home bar */
   .modal-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
     flex-direction: column-reverse;
+    gap: 0.6rem;
+    margin: 1.25rem -1.25rem 0;
+    padding: 0.9rem 1.25rem calc(0.9rem + env(safe-area-inset-bottom, 0px));
+    background: var(--sd-paper);
+    border-top: 1px solid var(--sd-line);
+    box-shadow: 0 -14px 18px -14px rgba(14, 27, 44, 0.18);
   }
 
   .modal-actions button {
     width: 100%;
+    min-height: 52px;
   }
 }
 
-/* ---------- Reduced motion ---------------------------------------------- */
+/* Very narrow screens: stack latitude and longitude */
+@media (max-width: 359px) {
+  .detail-latlng-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+/* Short landscape screens: keep modals scrollable and the header compact */
+@media (max-height: 480px) and (orientation: landscape) {
+  .modal-card {
+    padding-top: 1.25rem;
+  }
+
+  .modal-title {
+    margin-bottom: 0.9rem;
+  }
+}
+
+/* ---------- Reduced motion (scoped to this page's pieces) ---------------- */
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .detail-header::after,
+  .detail-eyebrow::before,
+  .detail-automation-on::before,
+  .detail-date-edit,
+  .detail-geocode-btn:disabled,
+  .modal-overlay,
+  .modal-card,
+  .modal-submit:disabled {
+    animation: none;
+  }
+
+  .detail-secondary-btn,
+  .detail-push-btn,
+  .detail-copy-btn,
+  .detail-toggle-btn,
+  .detail-date-save,
+  .detail-summary > div,
+  .detail-summary > div::before,
+  .detail-waypoint-chip,
+  .detail-geocode-btn,
+  .modal-submit {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   Added for the rewritten ShipmentDetailPage.jsx
+   (loading, failure, dismissible banner, busy buttons)
+   ========================================================================== */
+
+/* the banner can now hold a message and a dismiss button */
+.detail-error {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.detail-error-close {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin: -0.35rem -0.5rem -0.35rem 0;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--sd-danger);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.detail-error-close:active {
+  background: rgba(214, 66, 63, 0.14);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .detail-error-close:hover {
+    background: rgba(214, 66, 63, 0.14);
+  }
+}
+
+@media (pointer: coarse) {
+  .detail-error-close {
+    width: 44px;
+    height: 44px;
+    margin: -0.7rem -0.8rem -0.7rem 0;
+  }
+}
+
+/* loading */
+.detail-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 3rem 0;
+  font-family: var(--sd-font-body);
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: var(--sd-muted);
+}
+
+.detail-spinner {
+  width: 22px;
+  height: 22px;
+  border: 3px solid var(--sd-route-tint);
+  border-top-color: var(--sd-route);
+  border-radius: 50%;
+  animation: sd-spin 0.8s linear infinite;
+}
+
+@keyframes sd-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* failed to load */
+.detail-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  font-family: var(--sd-font-body);
+}
+
+.detail-state .detail-error {
+  width: 100%;
+  margin: 0;
+}
+
+.detail-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/* the "Back to dashboard" link is styled like the secondary button */
+a.detail-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+@media (max-width: 480px) {
+  .detail-state-actions {
+    width: 100%;
+  }
+
+  .detail-state-actions > * {
+    flex: 1 1 100%;
+  }
+}
+
+/* buttons that are busy */
+.detail-toggle-btn:disabled,
+.detail-date-save:disabled,
+.detail-date-cancel:disabled,
+.modal-cancel:disabled {
+  cursor: progress;
+  opacity: 0.6;
+  transform: none;
+}
+
+/* the dialog itself is focused for keyboard users; no ring needed on the card */
+.modal-card:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-spinner {
+    animation-duration: 1.6s;
   }
 }
