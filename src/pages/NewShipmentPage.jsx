@@ -8,6 +8,13 @@ import './NewShipmentPage.css';
 
 const ITEM_TYPES = ['package', 'card', 'atm_card', 'document', 'money', 'other'];
 
+async function geocodeLocation(query) {
+  const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`);
+  const data = await res.json();
+  if (!data[0]) throw new Error('No matching location found — enter coordinates manually.');
+  return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+}
+
 function AddressFields({ prefix, form, update }) {
   const stateVal = form[`${prefix}State`];
   const citySuggestions = STATE_CITIES[stateVal] || [];
@@ -57,6 +64,7 @@ function NewShipmentPage() {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [geocoding, setGeocoding] = useState(false);
 
   const [form, setForm] = useState({
     itemType: 'package',
@@ -76,6 +84,8 @@ function NewShipmentPage() {
     originState: '',
     originZip: '',
     originCountry: 'United States',
+    originLat: '',
+    originLng: '',
     destStreet: '',
     destCity: '',
     destState: '',
@@ -99,6 +109,25 @@ function NewShipmentPage() {
 
   function removeWaypoint(index) {
     setWaypoints((w) => w.filter((_, i) => i !== index));
+  }
+
+  async function handleFindOriginCoordinates() {
+    const query = [form.originCity, form.originState, form.originCountry].filter(Boolean).join(', ');
+    if (!form.originCity.trim()) {
+      setError('Enter an origin city first, then find coordinates.');
+      return;
+    }
+    setGeocoding(true);
+    setError(null);
+    try {
+      const { lat, lng } = await geocodeLocation(query);
+      update('originLat', lat.toFixed(6));
+      update('originLng', lng.toFixed(6));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setGeocoding(false);
+    }
   }
 
   async function handleSubmit(e) {
@@ -132,6 +161,8 @@ function NewShipmentPage() {
         state: stateNameFor(form.originState),
         zip: form.originZip,
         country: form.originCountry,
+        lat: form.originLat ? parseFloat(form.originLat) : undefined,
+        lng: form.originLng ? parseFloat(form.originLng) : undefined,
       },
       destination: {
         street: form.destStreet,
@@ -173,7 +204,7 @@ function NewShipmentPage() {
             </label>
             <label className="form-label">
               Weight (kg)
-              <input className="form-input" type="number" step="0.1" value={form.weight} onChange={(e) => update('weight', e.target.value)} />
+              <input className="form-input" type="number" step="0.01" value={form.weight} onChange={(e) => update('weight', e.target.value)} />
             </label>
           </div>
           <div className="form-grid form-grid--2">
@@ -208,7 +239,25 @@ function NewShipmentPage() {
 
         <section className="form-section">
           <h2 className="form-section-title">Origin</h2>
+          <p className="form-section-hint">
+            This is where the package starts — its coordinates power the live map the client sees from the moment this shipment is created.
+          </p>
           <AddressFields prefix="origin" form={form} update={update} />
+
+          <button type="button" className="geocode-btn" onClick={handleFindOriginCoordinates} disabled={geocoding}>
+            {geocoding ? 'Finding…' : '📍 Find Coordinates on Map'}
+          </button>
+
+          <div className="latlng-row">
+            <label className="form-label">
+              Latitude
+              <input className="form-input" value={form.originLat} onChange={(e) => update('originLat', e.target.value)} placeholder="e.g. 38.9072" />
+            </label>
+            <label className="form-label">
+              Longitude
+              <input className="form-input" value={form.originLng} onChange={(e) => update('originLng', e.target.value)} placeholder="e.g. -77.0369" />
+            </label>
+          </div>
         </section>
 
         <section className="form-section">

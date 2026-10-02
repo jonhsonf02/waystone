@@ -209,7 +209,10 @@ img.admin-sidebar-mark {
   flex: 1;
   min-width: 0;
   padding: 2.25rem 2.75rem 3rem;
-  overflow-x: auto;
+  /* clip, not auto/hidden: those turn <main> into a scroll container and break
+     every position: sticky inside it (New Shipment's button, error banner) */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* ---------- Mobile-only pieces: hidden on desktop ------------------------ */
@@ -502,12 +505,19 @@ img.admin-sidebar-mark {
   text-decoration: none;
 }
 
+/* a comfortable tap target for the logo on phones and tablets */
+.admin-topbar-brand {
+  min-height: 44px;
+}
+
 .admin-sidebar-brand-link {
   display: flex;
   align-items: center;
   gap: 0.65rem;
   min-width: 0;
-  overflow: hidden;
+  border-radius: 10px;
+  /* deliberately no overflow:hidden: it would clip the logo's glow and the
+     keyboard focus ring */
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -520,4 +530,34 @@ img.admin-sidebar-mark {
 .admin-topbar-brand:active,
 .admin-sidebar-brand-link:active {
   opacity: 0.75;
+}
+
+/* ---------- "View Site" leaves the admin: divider + arrow ---------------- */
+
+.admin-sidebar-nav .admin-sidebar-link[href='/'] {
+  margin-top: 0.6rem;
+}
+
+.admin-sidebar-nav .admin-sidebar-link[href='/']::before {
+  content: '';
+  position: absolute;
+  top: -0.45rem;
+  left: 0.9rem;
+  right: 0.9rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.14);
+}
+
+.admin-sidebar-nav .admin-sidebar-link[href='/']::after {
+  content: '↗';
+  margin-left: auto;
+  font-size: 0.95em;
+  opacity: 0.55;
+  transition: opacity 0.18s var(--al-ease), transform 0.18s var(--al-ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .admin-sidebar-nav .admin-sidebar-link[href='/']:hover::after {
+    opacity: 1;
+    transform: translate(2px, -2px);
+  }
 }
